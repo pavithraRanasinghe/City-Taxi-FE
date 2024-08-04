@@ -1,11 +1,14 @@
-import './App.css';
+import { Route, Routes } from "react-router-dom";
+import "./App.css";
+import Register from "./pages/Register";
 
 function App() {
   return (
-    <div>
-      <h1>City Taxi</h1>
-      <h2>Development</h2>
-    </div>
+    <>
+      <Routes>
+        <Route path="register" element={<Register />} />
+      </Routes>
+    </>
   );
 }
 
