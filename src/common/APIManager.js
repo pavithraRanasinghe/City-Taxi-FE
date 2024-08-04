@@ -29,14 +29,20 @@ export const request = (endPoint, requestType, body) =>
             } else if (response.status === 417) {
               reject(json);
             } else {
-              if (response.status === 401 || response.status === 403) {
+              if (
+                (response.status === 401 || response.status === 403) &&
+                endPoint !== "v1/app-user/login"
+              ) {
                 LogOutUser();
               }
               reject(json);
             }
           })
           .catch(error => {
-            if (response.status === 401 || response.status === 403) {
+            if (
+              (response.status === 401 || response.status === 403) &&
+              endPoint !== "v1/app-user/login"
+            ) {
               LogOutUser();
             }
             reject(response.status);

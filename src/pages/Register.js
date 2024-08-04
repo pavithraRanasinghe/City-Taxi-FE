@@ -127,7 +127,7 @@ const Register = () => {
         clearField();
         console.log("Registration Success : ", response);
         toast.success("Registration Successful");
-        // navigate("/question", { state: response });
+        navigate("/login");
       })
       .catch((error) => {
         console.log("ERROR : ", error);
