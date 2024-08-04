@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button, FloatingLabel, Form } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -13,6 +13,8 @@ import logoName from "../assets/logo_name.png";
 
 const Register = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const userType = location.state?.userType;
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -119,18 +121,16 @@ const Register = () => {
       username: email,
       contact: contact,
       password: password,
-      userType: "DRIVER",
+      userType: userType,
     });
     setLoading(true);
     request(url, Constants.POST, body)
       .then((response) => {
         clearField();
-        console.log("Registration Success : ", response);
         toast.success("Registration Successful");
         navigate("/login");
       })
       .catch((error) => {
-        console.log("ERROR : ", error);
         toast.error("Registration not complete");
       })
       .finally(() => {
@@ -152,7 +152,7 @@ const Register = () => {
       <div className="register-container">
         <img src={logoName} alt="Profile" className="logo_name" />
 
-        <h2 className="welcome">Register as a Driver</h2>
+        <h2 className="welcome">Register as a {userType}</h2>
 
         <Form className="m-3">
           <FloatingLabel

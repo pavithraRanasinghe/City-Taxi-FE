@@ -12,4 +12,7 @@ export const DELETE = "DELETE";
 export const USER = "user";
 export const IS_TOKEN_EXPIRED = false;
 
+export const DRIVER = "DRIVER";
+export const PASSENGER = "PASSENGER";
+
 

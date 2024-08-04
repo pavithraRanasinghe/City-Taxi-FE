@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FloatingLabel, Form, Button } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -73,7 +73,18 @@ const LogIn = () => {
           };
           setUser(user);
           clearField();
-          navigate("/", { replace: true });
+          const type = response.userType;
+          switch (type) {
+            case Constants.DRIVER:
+              navigate("/driver", { replace: true });
+              break;
+            case Constants.PASSENGER:
+              navigate("/passenger", { replace: true });
+              break;
+            default:
+              navigate("/login", { replace: true });
+              break;
+          }
         } else {
           toast.error("Doesn't match Credential");
         }
@@ -134,20 +145,6 @@ const LogIn = () => {
               LOG IN
             </Button>
           </div>
-          <p className="registerLink">
-            Didn't have an account?
-            <Link to={"/register"} style={{ textDecoration: "none" }}>
-              {" "}
-              Register
-            </Link>
-          </p>
-          <p className="registerLink">
-            Forgot Password?
-            <Link to={"/reset-password"} style={{ textDecoration: "none" }}>
-              {" "}
-              Reset
-            </Link>
-          </p>
         </Form>
       </div>
       <ToastContainer />
