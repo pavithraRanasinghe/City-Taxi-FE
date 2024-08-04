@@ -1,0 +1,16 @@
+.full_screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7); /* Adjust opacity as needed */
+  z-index: 9999; /* Place spinner above all other content */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner{
+    margin: 0 auto;
+}
