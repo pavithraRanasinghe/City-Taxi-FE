@@ -112,19 +112,22 @@ const Register = () => {
   };
 
   const register = () => {
-    const url = "auth/customer";
+    const url = "v1/app-user";
     const body = JSON.stringify({
       firstName: firstName,
       lastName: lastName,
-      email: email,
+      username: email,
       contact: contact,
       password: password,
+      userType: "DRIVER",
     });
     setLoading(true);
     request(url, Constants.POST, body)
       .then((response) => {
         clearField();
-        navigate("/question", { state: response });
+        console.log("Registration Success : ", response);
+        toast.success("Registration Successful");
+        // navigate("/question", { state: response });
       })
       .catch((error) => {
         console.log("ERROR : ", error);
