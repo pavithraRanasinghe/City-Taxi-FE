@@ -152,7 +152,7 @@ const Register = () => {
       <div className="register-container">
         <img src={logoName} alt="Profile" className="logo_name" />
 
-        <h2 className="welcome">Register New Account</h2>
+        <h2 className="welcome">Register as a Driver</h2>
 
         <Form className="m-3">
           <FloatingLabel
