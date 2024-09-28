@@ -15,6 +15,7 @@ const LogIn = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setLoading] = useState(false);
+  const [locationError, setLocationError] = useState(null);
 
   useEffect(() => {
     const queryParam = new URLSearchParams(location.search);
@@ -29,6 +30,26 @@ const LogIn = () => {
 
   const [isUsernameValid, setIsUsernameValid] = useState(true);
   const [isPasswordValid, setIsPasswordValid] = useState(true);
+
+  // Check for geolocation when user tries to log in
+  const checkLocationServices = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          console.log("Location fetched:", latitude, longitude);
+          // Proceed with login since location is available
+          login();
+        },
+        (error) => {
+          setLocationError("Please turn on your device's location.");
+          toast.error("Please turn on your device's location to continue.");
+        }
+      );
+    } else {
+      toast.error("Geolocation is not supported by this browser.");
+    }
+  };
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -53,7 +74,9 @@ const LogIn = () => {
     } else {
       setIsPasswordValid(true);
     }
-    login();
+    
+    // Check for location services before login
+    checkLocationServices();
   };
 
   const login = () => {
@@ -86,11 +109,11 @@ const LogIn = () => {
               break;
           }
         } else {
-          toast.error("Doesn't match Credential");
+          toast.error("Credentials do not match");
         }
       })
       .catch((error) => {
-        toast.error("Doesn't match Credential");
+        toast.error("Credentials do not match");
       })
       .finally(() => {
         setLoading(false);
@@ -121,7 +144,7 @@ const LogIn = () => {
               onChange={handleUsernameChange}
             />
             {!isUsernameValid && (
-              <p className="invalidText">Username cann't be empty</p>
+              <p className="invalidText">Username can't be empty</p>
             )}
           </FloatingLabel>
           <FloatingLabel
@@ -136,7 +159,7 @@ const LogIn = () => {
               onChange={handlePasswordChange}
             />
             {!isPasswordValid && (
-              <p className="invalidText">Password cann't be empty</p>
+              <p className="invalidText">Password can't be empty</p>
             )}
           </FloatingLabel>
 
