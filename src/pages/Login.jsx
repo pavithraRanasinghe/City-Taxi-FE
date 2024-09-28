@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FloatingLabel, Form, Button } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -41,7 +41,7 @@ const LogIn = () => {
           // Proceed with login since location is available
           login();
         },
-        (error) => {
+        () => {
           setLocationError("Please turn on your device's location.");
           toast.error("Please turn on your device's location to continue.");
         }
@@ -74,7 +74,7 @@ const LogIn = () => {
     } else {
       setIsPasswordValid(true);
     }
-    
+
     // Check for location services before login
     checkLocationServices();
   };
@@ -93,6 +93,7 @@ const LogIn = () => {
             userId: response.userId,
             email: response.email,
             token: response.token,
+            userType: response.userType,
           };
           setUser(user);
           clearField();
@@ -102,7 +103,7 @@ const LogIn = () => {
               navigate("/driver", { replace: true });
               break;
             case Constants.PASSENGER:
-              navigate("/passenger", { replace: true });
+              navigate("/booking", { replace: true });
               break;
             default:
               navigate("/login", { replace: true });
@@ -168,6 +169,13 @@ const LogIn = () => {
               LOG IN
             </Button>
           </div>
+          <p className="loginLink">
+            Don't you have an account?
+            <Link to={"/"} style={{ textDecoration: "none" }}>
+              {" "}
+              Registration
+            </Link>
+          </p>
         </Form>
       </div>
       <ToastContainer />
