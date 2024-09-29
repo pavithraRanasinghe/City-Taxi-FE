@@ -1,5 +1,5 @@
 import "./css/Home.css";
-import logoName from "../assets/logo_name.png";
+import logoName from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import { DRIVER, PASSENGER } from "../common/Constants";
 import { Button } from "react-bootstrap";
@@ -10,7 +10,8 @@ const Home = () => {
   return (
     <>
       <div className="home-container">
-        <img src={logoName} alt="Profile" className="logo_name" />
+        <img src={logoName} alt="Profile" className="logo_name" style={{ width: '350px', height: 'auto' }} />
+
 
         <h2 className="welcome">WELCOME TO CITY TAXI</h2>
       </div>

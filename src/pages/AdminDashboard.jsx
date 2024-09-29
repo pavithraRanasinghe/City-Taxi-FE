@@ -1,128 +1,147 @@
-import React from "react";
-import { Card, Button, Table, Container, Row, Col } from "react-bootstrap";
-import { FaUsers, FaCar, FaRoute, FaTachometerAlt } from "react-icons/fa";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Card, ListGroup } from 'react-bootstrap';
+import { FaUsers, FaCar, FaMoneyBillWave, FaMapMarkedAlt } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import Loader from '../components/Loader';
+import { request } from '../common/APIManager'; // Assuming you have an APIManager for handling requests
 
 const AdminDashboard = () => {
-  // Dummy data for drivers, passengers, and trips
-  const drivers = [
-    { id: 1, name: "John Doe", email: "johndoe@taxi.com", status: "Active" },
-    { id: 2, name: "Jane Smith", email: "janesmith@taxi.com", status: "Inactive" },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState({
+    totalDrivers: 0,
+    totalPassengers: 0,
+    ongoingTrips: 0,
+    totalEarnings: 0,
+  });
+  
+  // Sample activities data for demonstration
+  const [activities, setActivities] = useState([
+    { driverName: 'John Doe', action: 'Completed a trip to Downtown', timestamp: '2024-09-25T14:48:00Z' },
+    { driverName: 'Jane Smith', action: 'Updated vehicle details', timestamp: '2024-09-25T13:30:00Z' },
+    { driverName: 'Sam Lee', action: 'Changed availability to AVAILABLE', timestamp: '2024-09-25T12:15:00Z' },
+  ]);
 
-  const passengers = [
-    { id: 1, name: "Mark Johnson", email: "markjohnson@example.com", trips: 10 },
-    { id: 2, name: "Sophie Lee", email: "sophielee@example.com", trips: 5 },
-  ];
+  // Sample feedback data for demonstration
+  const [feedback, setFeedback] = useState([
+    { passengerName: 'Passenger 1', feedback: 'Rated Driver 1 - 5 Stars', timestamp: '2024-09-25T14:00:00Z' },
+    { passengerName: 'Passenger 2', feedback: 'Rated Driver 2 - 4 Stars', timestamp: '2024-09-25T13:15:00Z' },
+    { passengerName: 'Passenger 3', feedback: 'Reported an issue with the trip', timestamp: '2024-09-25T12:00:00Z' },
+  ]);
 
-  const trips = [
-    { id: 1, driver: "John Doe", passenger: "Mark Johnson", status: "Completed", price: "$20" },
-    { id: 2, driver: "Jane Smith", passenger: "Sophie Lee", status: "Cancelled", price: "$15" },
-  ];
+  useEffect(() => {
+    // Fetch data for the dashboard
+    const fetchData = async () => {
+      try {
+        const response = await request('/admin/dashboard-stats', 'GET'); // Example API call
+        setData({
+          totalDrivers: response.totalDrivers,
+          totalPassengers: response.totalPassengers,
+          ongoingTrips: response.ongoingTrips,
+          totalEarnings: response.totalEarnings,
+        });
+        // Fetch activities data as well if needed
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
-    <Container className="mt-5">
-      <Row>
-        {/* Drivers Section */}
-        <Col md={4}>
-          <Card className="mb-4 text-center">
+    <Container fluid>
+      <h2 className="my-4">Admin Dashboard</h2>
+      <Row className="mb-4">
+        <Col md={3}>
+          <Card className="text-center">
             <Card.Body>
-              <FaCar size={60} className="mb-3" />
-              <Card.Title>Drivers</Card.Title>
-              <Table striped bordered hover>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {drivers.map((driver) => (
-                    <tr key={driver.id}>
-                      <td>{driver.name}</td>
-                      <td>{driver.email}</td>
-                      <td>{driver.status}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-              <Button variant="primary">Manage Drivers</Button>
+              <FaCar size={40} style={{ color: '#3498db' }} /> {/* Blue icon for drivers */}
+              <h3>{data.totalDrivers}</h3>
+              <p>Total Drivers</p>
+              <Link to="/admin/manage-drivers">Manage Drivers</Link>
             </Card.Body>
           </Card>
         </Col>
-
-        {/* Passengers Section */}
-        <Col md={4}>
-          <Card className="mb-4 text-center">
+        <Col md={3}>
+          <Card className="text-center">
             <Card.Body>
-              <FaUsers size={60} className="mb-3" />
-              <Card.Title>Passengers</Card.Title>
-              <Table striped bordered hover>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Trips</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {passengers.map((passenger) => (
-                    <tr key={passenger.id}>
-                      <td>{passenger.name}</td>
-                      <td>{passenger.email}</td>
-                      <td>{passenger.trips}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-              <Button variant="primary">Manage Passengers</Button>
+              <FaUsers size={40} style={{ color: '#2ecc71' }} /> {/* Green icon for passengers */}
+              <h3>{data.totalPassengers}</h3>
+              <p>Total Passengers</p>
+              <Link to="/admin/manage-passengers">Manage Passengers</Link>
             </Card.Body>
           </Card>
         </Col>
-
-        {/* Trips Section */}
-        <Col md={4}>
-          <Card className="mb-4 text-center">
+        <Col md={3}>
+          <Card className="text-center">
             <Card.Body>
-              <FaRoute size={60} className="mb-3" />
-              <Card.Title>Trips</Card.Title>
-              <Table striped bordered hover>
-                <thead>
-                  <tr>
-                    <th>Driver</th>
-                    <th>Passenger</th>
-                    <th>Status</th>
-                    <th>Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {trips.map((trip) => (
-                    <tr key={trip.id}>
-                      <td>{trip.driver}</td>
-                      <td>{trip.passenger}</td>
-                      <td>{trip.status}</td>
-                      <td>{trip.price}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-              <Button variant="primary">Manage Trips</Button>
+              <FaMapMarkedAlt size={40} style={{ color: '#e67e22' }} /> {/* Orange icon for trips */}
+              <h3>{data.ongoingTrips}</h3>
+              <p>Ongoing Trips</p>
+              <Link to="/admin/manage-trips">View Trips</Link>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={3}>
+          <Card className="text-center">
+            <Card.Body>
+              <FaMoneyBillWave size={40} style={{ color: '#f1c40f' }} /> {/* Yellow icon for earnings */}
+              <h3>${data.totalEarnings}</h3>
+              <p>Total Earnings</p>
+              <Link to="/admin/reports">View Financial Reports</Link>
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-      {/* Additional Section */}
       <Row>
-        <Col md={12}>
-          <Card className="text-center">
-            <Card.Body>
-              <FaTachometerAlt size={60} className="mb-3" />
-              <Card.Title>Dashboard Overview</Card.Title>
-              <p>Monitor and manage drivers, passengers, and trips effectively.</p>
-              <Button variant="success">View Detailed Reports</Button>
-            </Card.Body>
+        <Col md={6}>
+          <Card className="mt-4">
+            <Card.Header className="bg-primary text-white">
+              <h5>Recent Driver Activity</h5>
+            </Card.Header>
+            <ListGroup variant="flush">
+              {activities.length === 0 ? (
+                <ListGroup.Item>No recent activities found.</ListGroup.Item>
+              ) : (
+                activities.map((activity, index) => (
+                  <ListGroup.Item key={index} className="d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong>{activity.driverName}</strong> - {activity.action}
+                    </div>
+                    <div className="text-muted">{new Date(activity.timestamp).toLocaleString()}</div>
+                  </ListGroup.Item>
+                ))
+              )}
+            </ListGroup>
+          </Card>
+        </Col>
+
+        <Col md={6}>
+          <Card className="mt-4">
+            <Card.Header className="bg-warning text-white">
+              <h5>Recent Passenger Feedback</h5>
+            </Card.Header>
+            <ListGroup variant="flush">
+              {feedback.length === 0 ? (
+                <ListGroup.Item>No recent feedback found.</ListGroup.Item>
+              ) : (
+                feedback.map((item, index) => (
+                  <ListGroup.Item key={index} className="d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong>{item.passengerName}</strong> - {item.feedback}
+                    </div>
+                    <div className="text-muted">{new Date(item.timestamp).toLocaleString()}</div>
+                  </ListGroup.Item>
+                ))
+              )}
+            </ListGroup>
           </Card>
         </Col>
       </Row>
