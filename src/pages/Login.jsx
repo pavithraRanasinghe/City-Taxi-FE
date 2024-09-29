@@ -9,7 +9,7 @@ import * as Constants from "../common/Constants";
 import "./css/Login.css";
 import { setUser } from "../common/PersistanceManager";
 import Loader from "../components/Loader";
-import logoName from "../assets/logo_name.png";
+import logoName from "../assets/logo.png";
 
 const LogIn = () => {
   const navigate = useNavigate();
@@ -129,7 +129,7 @@ const LogIn = () => {
   return (
     <div>
       <div className="login-container">
-        <img src={logoName} alt="Profile" className="logo_name" />
+      <img src={logoName} alt="Profile" className="logo_name" style={{ width: '350px', height: 'auto' }} />
 
         <h2 className="welcome">WELCOME BACK</h2>
         <Form className="m-3" onSubmit={handleLogin}>

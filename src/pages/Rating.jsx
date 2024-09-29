@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, Form, Button, Container, Row, Col, Badge } from "react-bootstrap";
 import "./css/Register.css"; // Assuming you have custom styles here
-import logoName from "../assets/logo_name.png"; // Ensure the correct path to your logo
+import logoName from "../assets/logo.png"; // Ensure the correct path to your logo
 
 const Feedback = () => {
   const [rating, setRating] = useState(0);
@@ -61,7 +61,7 @@ const Feedback = () => {
     <Container>
       {/* Feedback Form */}
       <div className="text-center">
-        <img src={logoName} alt="Logo" className="logo_name mb-3" />
+        <img src={logoName} alt="Profile" className="logo_name" style={{ width: '350px', height: 'auto' }} />
         <h2 className="mb-4">Rate Your Experience</h2>
 
         {/* Star Rating Section */}
