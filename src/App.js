@@ -21,9 +21,11 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="login" element={<LogIn />} />
         <Route path="register" element={<Register />} />
-        <Route path="admin" element={<Admin />} />
-        <Route path="manageDrivers" element={<ManageDrivers />} />
         <Route path="payment" element={<Payment />} />
+        <Route element={<DriverRequireAuth />}>
+          <Route path="admin" element={<Admin />} />
+          <Route path="manageDrivers" element={<ManageDrivers />} />
+        </Route>
         <Route element={<DriverRequireAuth />}>
           <Route path="driver" element={<DriverDashboard />} />
           <Route path="vehicle" element={<VehicleRegistration />} />

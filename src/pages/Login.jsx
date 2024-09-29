@@ -89,11 +89,19 @@ const LogIn = () => {
     request(url, Constants.POST, body)
       .then((response) => {
         if (response.email !== null && response.userId !== 0) {
+          let userId = null;
+          if (response.userType === Constants.DRIVER) {
+            userId = response.driverId;
+          } else if (response.userType === Constants.PASSENGER) {
+            userId = response.passengerId;
+          }
           const user = {
-            userId: response.userId,
+            id: response.id,
+            name: `${response.firstName} ${response.lastName}`,
             email: response.email,
             token: response.token,
             userType: response.userType,
+            userId: userId,
           };
           setUser(user);
           clearField();
@@ -129,7 +137,12 @@ const LogIn = () => {
   return (
     <div>
       <div className="login-container">
-      <img src={logoName} alt="Profile" className="logo_name" style={{ width: '350px', height: 'auto' }} />
+        <img
+          src={logoName}
+          alt="Profile"
+          className="logo_name"
+          style={{ width: "350px", height: "auto" }}
+        />
 
         <h2 className="welcome">WELCOME BACK</h2>
         <Form className="m-3" onSubmit={handleLogin}>

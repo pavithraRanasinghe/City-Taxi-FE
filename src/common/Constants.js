@@ -14,5 +14,6 @@ export const IS_TOKEN_EXPIRED = false;
 
 export const DRIVER = "DRIVER";
 export const PASSENGER = "PASSENGER";
+export const ADMIN = "ADMIN";
 
 

@@ -21,9 +21,10 @@ export const request = (endPoint, requestType, body) =>
       body: body,
     })
       .then(response => {
+        console.log("R : ", response);
         response
           .json()
-          .then(json => {
+          .then((json) => {
             if (response.ok) {
               resolve(json);
             } else if (response.status === 417) {
@@ -33,17 +34,18 @@ export const request = (endPoint, requestType, body) =>
                 (response.status === 401 || response.status === 403) &&
                 endPoint !== "v1/app-user/login"
               ) {
-                LogOutUser();
+                // LogOutUser();
               }
               reject(json);
             }
           })
-          .catch(error => {
+          .catch((error) => {
+            console.log("ERR : ", error);
             if (
               (response.status === 401 || response.status === 403) &&
               endPoint !== "v1/app-user/login"
             ) {
-              LogOutUser();
+              // LogOutUser();
             }
             reject(response.status);
           });
