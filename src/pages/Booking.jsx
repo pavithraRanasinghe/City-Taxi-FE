@@ -7,7 +7,6 @@ import {
   Row,
   Col,
   Alert,
-  ToastContainer,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./css/Booking.css";
@@ -16,7 +15,8 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { request } from "../common/APIManager";
 import * as Constants from "../common/Constants";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { getUser } from "../common/PersistanceManager";
 import PassengerSideNav from "../components/PassengerSideNav";
 import { useNavigate } from "react-router-dom";
@@ -67,7 +67,6 @@ const Booking = () => {
   };
 
   const searchDrivers = () => {
-    console.log("PAS : ", getUser());
     setShowDrivers(true);
     const url = `v1/driver/search?longitude=${pickupLocation.lng}&latitude=${pickupLocation.lat}`;
     request(url, Constants.GET)

@@ -14,14 +14,13 @@ export const request = (endPoint, requestType, body) =>
     fetch(Constants.BASE_API + endPoint, {
       method: requestType,
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
         Authorization: token,
       },
       body: body,
     })
-      .then(response => {
-        console.log("R : ", response);
+      .then((response) => {
         response
           .json()
           .then((json) => {
@@ -50,7 +49,7 @@ export const request = (endPoint, requestType, body) =>
             reject(response.status);
           });
       })
-      .catch(error => {
+      .catch((error) => {
         reject(error);
       });
   });
