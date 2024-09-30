@@ -13,6 +13,11 @@ import PassengerRequireAuth from "./components/PassengerRequireAuth";
 import Admin from "./pages/AdminDashboard";
 import ManageDrivers from "./pages/ManageDrivers";
 import Payment from "./pages/Payment";
+import ManagePassengers from "./pages/ManagePassengers";
+import ViewDriver from "./pages/ViewProfileDriver";
+import ViewPassenger from "./pages/viewProfilePassengers";
+import OngoingTrip from "./pages/OngoingTrip";
+import FinanceReport from "./pages/FinanceReport";
 
 function App() {
   return (
@@ -22,9 +27,16 @@ function App() {
         <Route path="login" element={<LogIn />} />
         <Route path="register" element={<Register />} />
         <Route path="payment" element={<Payment />} />
+        <Route path="admin" element={<Admin />} />
+        <Route path="managePassenger" element={<ManagePassengers />} />
+        <Route path="manageDrivers" element={<ManageDrivers />} />
+        <Route path="viewDrivers" element={<ViewDriver />} />
+        <Route path="viewPassenger" element={<ViewPassenger />} />
+        <Route path="trips" element={<OngoingTrip/>} />
+        <Route path="finance" element={<FinanceReport/>} />
         <Route element={<DriverRequireAuth />}>
-          <Route path="admin" element={<Admin />} />
-          <Route path="manageDrivers" element={<ManageDrivers />} />
+          
+          
         </Route>
         <Route element={<DriverRequireAuth />}>
           <Route path="driver" element={<DriverDashboard />} />
