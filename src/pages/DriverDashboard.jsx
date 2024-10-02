@@ -25,7 +25,7 @@ const DriverDashboard = () => {
     loadTripsByStatus("PENDING");
     updateCurrentLocation();
     findDriver();
-  }, [setCurrentLocation]);
+  }, []);
 
   const getCurrentLocation = () => {
     if (navigator.geolocation) {

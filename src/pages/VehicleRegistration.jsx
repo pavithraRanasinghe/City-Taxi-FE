@@ -10,15 +10,16 @@ import * as Constants from "../common/Constants";
 import "./css/Register.css";
 import Loader from "../components/Loader";
 import logoName from "../assets/logo.png";
+import { getUser } from "../common/PersistanceManager";
 
 const VehicleRegister = () => {
   const navigate = useNavigate();
 
-  const [vehicleType, setVehicleType] = useState("");
-  const [brand, setBrand] = useState("");
+  const [type, setVehicleType] = useState("");
+  const [name, setName] = useState("");
   const [model, setModel] = useState("");
+  const [vehicleNumber, setVehicleNumber] = useState("");
   const [manufacturedYear, setManufacturedYear] = useState("");
-  const [registrarYear, setRegistrarYear] = useState("");
   const [color, setColor] = useState("");
   const [registrationNumber, setRegistrationNumber] = useState("");
   const [license, setLicense] = useState(null);
@@ -31,14 +32,15 @@ const VehicleRegister = () => {
   const [isBrandValid, setIsBrandValid] = useState(true);
   const [isModelValid, setIsModelValid] = useState(true);
   const [isManufacturedYearValid, setIsManufacturedYearValid] = useState(true);
-  const [isRegistrarYearValid, setIsRegistrarYearValid] = useState(true);
+  const [isVehicleNumberValid, setIsVehicleNumberValid] = useState(true);
   const [isColorValid, setIsColorValid] = useState(true);
-  const [isRegistrationNumberValid, setIsRegistrationNumberValid] = useState(true);
+  const [isRegistrationNumberValid, setIsRegistrationNumberValid] =
+    useState(true);
 
   const [fileErrors, setFileErrors] = useState({
     licenseError: "",
     insuranceError: "",
-    photosError: ""
+    photosError: "",
   });
 
   const validFileTypes = ["application/pdf", "image/jpeg", "image/jpg"];
@@ -81,16 +83,20 @@ const VehicleRegister = () => {
   const handleRegister = (event) => {
     event.preventDefault();
 
-    if (fileErrors.licenseError || fileErrors.insuranceError || fileErrors.photosError) {
-        toast.error("Please upload valid files.");
-        return;
-      }
+    if (
+      fileErrors.licenseError ||
+      fileErrors.insuranceError ||
+      fileErrors.photosError
+    ) {
+      toast.error("Please upload valid files.");
+      return;
+    }
 
-    if (vehicleType.trim() === "") {
+    if (type.trim() === "") {
       setIsVehicleTypeValid(false);
       return;
     }
-    if (brand.trim() === "") {
+    if (name.trim() === "") {
       setIsBrandValid(false);
       return;
     }
@@ -102,8 +108,8 @@ const VehicleRegister = () => {
       setIsManufacturedYearValid(false);
       return;
     }
-    if (registrarYear.trim() === "" || isNaN(registrarYear)) {
-      setIsRegistrarYearValid(false);
+    if (vehicleNumber.trim() === "") {
+      setIsVehicleNumberValid(false);
       return;
     }
     if (color.trim() === "") {
@@ -119,15 +125,17 @@ const VehicleRegister = () => {
   };
 
   const register = () => {
-    const url = "v1/vehicle-register";
+    const driver = getUser();
+    const url = "v1/vehicle";
     const body = JSON.stringify({
-      vehicleType,
-      brand,
-      model,
-      manufacturedYear,
-      registrarYear,
-      color,
-      registrationNumber,
+      type: type,
+      name: name,
+      model: model,
+      manufacturedYear: manufacturedYear,
+      vehicleNumber: vehicleNumber,
+      color: color,
+      registrationNumber: registrationNumber,
+      driverId: driver.userId,
     });
 
     setLoading(true);
@@ -135,7 +143,7 @@ const VehicleRegister = () => {
       .then((response) => {
         toast.success("Vehicle Registered Successfully");
         clearField();
-        navigate("/dashboard");
+        navigate("/driver");
       })
       .catch((error) => {
         toast.error("Vehicle Registration Failed");
@@ -147,10 +155,10 @@ const VehicleRegister = () => {
 
   const clearField = () => {
     setVehicleType("");
-    setBrand("");
+    setName("");
     setModel("");
     setManufacturedYear("");
-    setRegistrarYear("");
+    setVehicleNumber("");
     setColor("");
     setRegistrationNumber("");
     setLicense(null);
@@ -161,107 +169,166 @@ const VehicleRegister = () => {
   return (
     <div>
       <div className="register-container">
-        <img src={logoName} alt="Profile" className="logo_name" style={{ width: '350px', height: 'auto' }} />
 
         <h2 className="welcome">Vehicle Registration</h2>
 
         <Form className="m-3">
-          <FloatingLabel controlId="vehicleType" label="Vehicle Type" className="mb-3 txtInput">
+          <FloatingLabel
+            controlId="vehicleType"
+            label="Vehicle Type"
+            className="mb-3 txtInput"
+          >
             <Form.Control
               type="text"
               placeholder="Vehicle Type"
-              value={vehicleType}
+              value={type}
               onChange={(e) => setVehicleType(e.target.value)}
             />
-            {!isVehicleTypeValid && <p className="invalidText">Vehicle type cannot be empty</p>}
+            {!isVehicleTypeValid && (
+              <p className="invalidText">Vehicle type cannot be empty</p>
+            )}
           </FloatingLabel>
 
-          <FloatingLabel controlId="brand" label="Brand" className="mb-3 txtInput">
+          <FloatingLabel
+            controlId="name"
+            label="Name"
+            className="mb-3 txtInput"
+          >
             <Form.Control
               type="text"
-              placeholder="Brand"
-              value={brand}
-              onChange={(e) => setBrand(e.target.value)}
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
-            {!isBrandValid && <p className="invalidText">Brand cannot be empty</p>}
+            {!isBrandValid && (
+              <p className="invalidText">Name cannot be empty</p>
+            )}
           </FloatingLabel>
 
-          <FloatingLabel controlId="model" label="Model" className="mb-3 txtInput">
+          <FloatingLabel
+            controlId="model"
+            label="Model"
+            className="mb-3 txtInput"
+          >
             <Form.Control
               type="text"
               placeholder="Model"
               value={model}
               onChange={(e) => setModel(e.target.value)}
             />
-            {!isModelValid && <p className="invalidText">Model cannot be empty</p>}
+            {!isModelValid && (
+              <p className="invalidText">Model cannot be empty</p>
+            )}
           </FloatingLabel>
 
-          <FloatingLabel controlId="manufacturedYear" label="Manufactured Year" className="mb-3 txtInput">
+          <FloatingLabel
+            controlId="manufacturedYear"
+            label="Manufactured Year"
+            className="mb-3 txtInput"
+          >
             <Form.Control
               type="number"
               placeholder="Manufactured Year"
               value={manufacturedYear}
               onChange={(e) => setManufacturedYear(e.target.value)}
             />
-            {!isManufacturedYearValid && <p className="invalidText">Invalid manufactured year</p>}
+            {!isManufacturedYearValid && (
+              <p className="invalidText">Invalid manufactured year</p>
+            )}
           </FloatingLabel>
 
-          <FloatingLabel controlId="registrarYear" label="Registrar Year" className="mb-3 txtInput">
+          <FloatingLabel
+            controlId="vehicleNumber"
+            label="Vehicle Number"
+            className="mb-3 txtInput"
+          >
             <Form.Control
-              type="number"
-              placeholder="Registrar Year"
-              value={registrarYear}
-              onChange={(e) => setRegistrarYear(e.target.value)}
+              type="text"
+              placeholder="Vehicle Number"
+              value={vehicleNumber}
+              onChange={(e) => setVehicleNumber(e.target.value)}
             />
-            {!isRegistrarYearValid && <p className="invalidText">Invalid registrar year</p>}
+            {!isVehicleNumberValid && (
+              <p className="invalidText">Invalid vehicle number</p>
+            )}
           </FloatingLabel>
 
-          <FloatingLabel controlId="color" label="Color" className="mb-3 txtInput">
+          <FloatingLabel
+            controlId="color"
+            label="Color"
+            className="mb-3 txtInput"
+          >
             <Form.Control
               type="text"
               placeholder="Color"
               value={color}
               onChange={(e) => setColor(e.target.value)}
             />
-            {!isColorValid && <p className="invalidText">Color cannot be empty</p>}
+            {!isColorValid && (
+              <p className="invalidText">Color cannot be empty</p>
+            )}
           </FloatingLabel>
 
-          <FloatingLabel controlId="registrationNumber" label="Registration Number" className="mb-3 txtInput">
+          <FloatingLabel
+            controlId="registrationNumber"
+            label="Registration Number"
+            className="mb-3 txtInput"
+          >
             <Form.Control
               type="text"
               placeholder="Registration Number"
               value={registrationNumber}
               onChange={(e) => setRegistrationNumber(e.target.value)}
             />
-            {!isRegistrationNumberValid && <p className="invalidText">Registration number cannot be empty</p>}
+            {!isRegistrationNumberValid && (
+              <p className="invalidText">Registration number cannot be empty</p>
+            )}
           </FloatingLabel>
 
-          <FloatingLabel controlId="vehicleLicense" label="Upload Vehicle License" className="mb-3 txtInput">
+          <FloatingLabel
+            controlId="vehicleLicense"
+            label="Upload Vehicle License"
+            className="mb-3 txtInput"
+          >
             <Form.Control
-                type="file"
-                onChange={handleLicenseChange}
-                accept=".pdf, .jpg, .jpeg" 
+              type="file"
+              onChange={handleLicenseChange}
+              accept=".pdf, .jpg, .jpeg"
             />
-            {fileErrors.licenseError && <p className="invalidText">{fileErrors.licenseError}</p>}
-          </FloatingLabel>
-     
-          <FloatingLabel controlId="vehicleInsurance" label="Upload Vehicle Insurance" className="mb-3 txtInput">
-            <Form.Control
-                type="file"
-                onChange={handleInsuranceChange}
-                accept=".pdf, .jpg, .jpeg" 
-            />
-            {fileErrors.insuranceError && <p className="invalidText">{fileErrors.insuranceError}</p>}
+            {fileErrors.licenseError && (
+              <p className="invalidText">{fileErrors.licenseError}</p>
+            )}
           </FloatingLabel>
 
-          <FloatingLabel controlId="vehiclePhotos" label="Upload Vehicle Photos" className="mb-3 txtInput">
+          <FloatingLabel
+            controlId="vehicleInsurance"
+            label="Upload Vehicle Insurance"
+            className="mb-3 txtInput"
+          >
             <Form.Control
-                type="file"
-                multiple
-                onChange={handlePhotosChange}
-                accept=".jpg, .jpeg" 
+              type="file"
+              onChange={handleInsuranceChange}
+              accept=".pdf, .jpg, .jpeg"
             />
-            {fileErrors.photosError && <p className="invalidText">{fileErrors.photosError}</p>}
+            {fileErrors.insuranceError && (
+              <p className="invalidText">{fileErrors.insuranceError}</p>
+            )}
+          </FloatingLabel>
+
+          <FloatingLabel
+            controlId="vehiclePhotos"
+            label="Upload Vehicle Photos"
+            className="mb-3 txtInput"
+          >
+            <Form.Control
+              type="file"
+              multiple
+              onChange={handlePhotosChange}
+              accept=".jpg, .jpeg"
+            />
+            {fileErrors.photosError && (
+              <p className="invalidText">{fileErrors.photosError}</p>
+            )}
           </FloatingLabel>
 
           <div className="wrapper">
