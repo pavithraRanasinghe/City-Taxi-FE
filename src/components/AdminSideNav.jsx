@@ -5,7 +5,7 @@ import Offcanvas from "react-bootstrap/Offcanvas";
 import { getUser } from "../common/PersistanceManager";
 import { useLocation } from "react-router-dom";
 
-const PassengerSideNav = () => {
+const AdminSideNav = () => {
   const user = getUser();
   const location = useLocation();
   const currentPath = location.pathname;
@@ -38,9 +38,6 @@ const PassengerSideNav = () => {
             <Offcanvas.Body>
               <Nav className="justify-content-end flex-grow-1 pe-3">
                 <Nav.Link href="passenger">Home</Nav.Link>
-                <Nav.Link href="booking" disabled={getUser().onTrip}>
-                  Booking
-                </Nav.Link>
               </Nav>
             </Offcanvas.Body>
           </Navbar.Offcanvas>
@@ -50,4 +47,4 @@ const PassengerSideNav = () => {
   );
 };
 
-export default PassengerSideNav;
+export default AdminSideNav;

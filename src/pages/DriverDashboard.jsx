@@ -8,9 +8,11 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getUser } from "../common/PersistanceManager";
 import "./css/DriverDashboard.css";
+import DriverSideNav from "../components/DriverSideNav";
 
 const DriverDashboard = () => {
-  const [completedTrips, setCompletedTrips] = useState(0);
+  const [completedTripCount, setCompletedTripCount] = useState(0);
+  const [ongoingTripCount, setOngoingTripCount] = useState(0);
   const [ongoingTrips, setOngoingTrips] = useState([]);
   const [earnings, setEarnings] = useState(150.0);
   const [rating, setRating] = useState(4.8);
@@ -23,7 +25,7 @@ const DriverDashboard = () => {
     getCurrentLocation();
     loadDashboardData();
     loadTripsByStatus("PENDING");
-    updateCurrentLocation();
+    // updateCurrentLocation();
     findDriver();
   }, []);
 
@@ -61,8 +63,8 @@ const DriverDashboard = () => {
     const url = `v1/dashboard/${getUser().userId}`;
     request(url, Constants.GET)
       .then((response) => {
-        setCompletedTrips(response.completedTripCount);
-        setOngoingTrips(response.ongoingTripCount);
+        setCompletedTripCount(response.completedTripCount);
+        setOngoingTripCount(response.onGoingTripCount);
         setEarnings(response.totalEarning);
         setRating(response.rating);
       })
@@ -78,7 +80,7 @@ const DriverDashboard = () => {
 
     request(url, Constants.GET)
       .then((response) => {
-        console.log("RESPONSE : ", response);
+        setOngoingTrips(response);
       })
       .catch((error) => {
         toast.error(error.message);
@@ -92,11 +94,65 @@ const DriverDashboard = () => {
     });
   };
 
+  const onAccept = (tripId) => {
+    const url = `v1/trip/${tripId}/status?status=CONFIRM`;
+    request(url, Constants.PUT)
+      .then((response) => {
+        toast.success("Trip Confirmed");
+        loadTripsByStatus("PENDING");
+      })
+      .catch((error) => {
+        console.log("ERROR : ", error);
+        toast.error("Trip not confirmed");
+      });
+  };
+
   return (
     <>
+      <DriverSideNav />
       <Container fluid className="mt-4">
         <h2 className="text-center">Driver Dashboard</h2>
         <div className="driver-status">{driver && driver.status}</div>
+
+        {/* Ongoing Trip Details */}
+        <Row className="mt-4">
+          <Col md={12}>
+            {ongoingTrips.length > 0 && (
+              <>
+                <Card>
+                  <Card.Header>Pending Trip Details</Card.Header>
+                  {ongoingTrips.map((tripDetail, index) => (
+                    <Card.Body key={index}>
+                      <Row>
+                        <Col xs={8}>
+                          <Card.Text>
+                            <p>
+                              <strong>Passneger :</strong>{" "}
+                              {tripDetail.passenger.firstName}{" "}
+                              {tripDetail.passenger.lastName}
+                            </p>
+                            <p>
+                              <strong>Pickup Location:</strong>{" "}
+                              {tripDetail.startLocationName}
+                            </p>
+                          </Card.Text>
+                        </Col>
+                        <Col xs={4} className="btn-card">
+                          <Button
+                            variant="success"
+                            onClick={() => onAccept(tripDetail.id)}
+                          >
+                            ACCEPT
+                          </Button>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  ))}
+                </Card>
+              </>
+            )}
+          </Col>
+        </Row>
 
         {/* Top Row: Key Stats */}
         <Row className="mt-4">
@@ -106,7 +162,7 @@ const DriverDashboard = () => {
               <Card.Body>
                 <FaCar size={50} color="#007bff" />
                 <Card.Title className="mt-3">Completed Trips</Card.Title>
-                <Card.Text>{completedTrips}</Card.Text>
+                <Card.Text>{completedTripCount}</Card.Text>
               </Card.Body>
             </Card>
           </Col>
@@ -117,7 +173,7 @@ const DriverDashboard = () => {
               <Card.Body>
                 <FaCar size={50} color="#28a745" />
                 <Card.Title className="mt-3">Ongoing Trips</Card.Title>
-                <Card.Text>{ongoingTrips}</Card.Text>
+                <Card.Text>{ongoingTripCount}</Card.Text>
               </Card.Body>
             </Card>
           </Col>
@@ -166,41 +222,6 @@ const DriverDashboard = () => {
             </Card>
           </Col>
         </Row> */}
-
-        {/* Ongoing Trip Details */}
-        <Row className="mt-4">
-          <Col md={12}>
-            {ongoingTrips > 0 ? (
-              <>
-                <Card>
-                  <Card.Header>Ongoing Trip Details</Card.Header>
-                  {ongoingTrips.map((tripDetail) => {
-                    <Card.Body>
-                      <Row>
-                        <Col>
-                          <Card.Text>
-                            <p>
-                              <strong>Pickup Location:</strong> 123 Main St
-                            </p>
-                          </Card.Text>
-                        </Col>
-                        <Col>
-                          <Button variant="success">Navigate</Button>
-                        </Col>
-                      </Row>
-                    </Card.Body>;
-                  })}
-                </Card>
-              </>
-            ) : (
-              <Card>
-                <Card.Body>
-                  <p>No ongoing trips at the moment.</p>
-                </Card.Body>
-              </Card>
-            )}
-          </Col>
-        </Row>
       </Container>
       <ToastContainer />
     </>

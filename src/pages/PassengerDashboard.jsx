@@ -1,10 +1,51 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Button, Table, Container, Row, Col } from "react-bootstrap";
 import { FaUser, FaHistory, FaClock } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import PassengerSideNav from "../components/PassengerSideNav";
+import { getUser } from "../common/PersistanceManager";
+import { request } from "../common/APIManager";
+import * as Constants from "../common/Constants";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const PassengerDashboard = () => {
+  const [currentUser, setCurrentUser] = useState();
+  const [currentLocation, setCurrentLocation] = useState(null);
+
+  useEffect(() => {
+    getCurrentLocation();
+    setCurrentUser(getUser());
+    updateCurrentLocation();
+  }, []);
+
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setCurrentLocation({ lat: latitude, lng: longitude });
+        },
+        (error) => {
+          console.error("Error retrieving location:", error);
+        }
+      );
+    } else {
+      console.error("Location service not ready");
+    }
+  };
+  const updateCurrentLocation = () => {
+    if (currentLocation !== null) {
+      const url = `v1/passenger/update-location/${getUser().userId}?longitude=${
+        currentLocation.lng
+      }&latitude=${currentLocation.lat}`;
+
+      request(url, Constants.PUT).catch((error) => {
+        toast.error("Location not updated");
+      });
+    }
+  };
+
   // Dummy data for bookings and upcoming rides
   const bookingHistory = [
     {
@@ -50,9 +91,9 @@ const PassengerDashboard = () => {
                 <FaUser size={60} className="mb-3" />
                 <Card.Title>Passenger Profile</Card.Title>
                 <Card.Text>
-                  Name: John Doe <br />
-                  Email: johndoe@example.com <br />
-                  Phone: +1 123-456-7890
+                  Name: {getUser().name}
+                  <br />
+                  Email: {getUser().email} <br />
                 </Card.Text>
                 <Button variant="primary">Edit Profile</Button>
               </Card.Body>
@@ -128,6 +169,7 @@ const PassengerDashboard = () => {
           </Col>
         </Row>
       </Container>
+      <ToastContainer />
     </>
   );
 };

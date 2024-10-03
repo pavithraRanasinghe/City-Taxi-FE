@@ -41,9 +41,14 @@ const Booking = () => {
   const [selectedDriverId, setSelectedDriverId] = useState(null);
 
   const navigate = useNavigate();
-
   // Geolocation to get user's current location for pickup
   useEffect(() => {
+    const currentUser = getUser();
+
+    if (currentUser.onTrip) {
+      navigate("/passenger", { replace: true });
+    }
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {

@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button, FloatingLabel, Form } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -9,7 +9,6 @@ import { request } from "../common/APIManager";
 import * as Constants from "../common/Constants";
 import "./css/Register.css";
 import Loader from "../components/Loader";
-import logoName from "../assets/logo.png";
 import { getUser } from "../common/PersistanceManager";
 
 const VehicleRegister = () => {

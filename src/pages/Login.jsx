@@ -102,6 +102,7 @@ const LogIn = () => {
             token: response.token,
             userType: response.userType,
             userId: userId,
+            onTrip: response.onTrip,
           };
           setUser(user);
           clearField();
@@ -112,6 +113,9 @@ const LogIn = () => {
               break;
             case Constants.PASSENGER:
               navigate("/booking", { replace: true });
+              break;
+            case Constants.ADMIN:
+              navigate("/admin", { replace: true });
               break;
             default:
               navigate("/login", { replace: true });
