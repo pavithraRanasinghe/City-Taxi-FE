@@ -38,8 +38,8 @@ function App() {
           <Route path="manageDrivers" element={<ManageDrivers />} />
           <Route path="viewDrivers" element={<ViewDriver />} />
           <Route path="viewPassenger" element={<ViewPassenger />} />
-          <Route path="finance" element={<FinanceReport />} />
         </Route>
+        <Route path="finance" element={<FinanceReport />} />
         <Route element={<DriverRequireAuth />}>
           <Route path="driver" element={<DriverDashboard />} />
           <Route path="vehicle" element={<VehicleRegistration />} />

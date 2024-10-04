@@ -19,6 +19,7 @@ const DriverDashboard = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [locationError, setLocationError] = useState(false);
   const [driver, setDriver] = useState(null);
+  const [statusColor, setStatusColor] = useState("Blue");
 
   useEffect(() => {
     getCurrentLocation();
@@ -89,6 +90,21 @@ const DriverDashboard = () => {
   const findDriver = () => {
     const url = `v1/driver/${getUser().userId}`;
     request(url, Constants.GET).then((response) => {
+      console.log(response);
+      switch (response.status) {
+        case "AVAILABLE":
+          setStatusColor("blue");
+          break;
+        case "BUSY":
+          setStatusColor("darkred");
+          break;
+        case "BLOCKED":
+          setStatusColor("black");
+          break;
+        default:
+          setStatusColor("blue");
+          break;
+      }
       setDriver(response);
     });
   };
@@ -108,10 +124,13 @@ const DriverDashboard = () => {
 
   return (
     <>
-      {getUser().onTrip && <div className="banner">ON A TRIP</div>}
+      {getUser().onTrip && (
+        <div className="banner" style={{ backgroundColor: statusColor }}>
+          {driver && driver.status}
+        </div>
+      )}
       <Container fluid className="mt-4">
         <h2 className="text-center">Driver Dashboard</h2>
-        <div className="driver-status">{driver && driver.status}</div>
 
         {/* Ongoing Trip Details */}
         <Row className="mt-4">

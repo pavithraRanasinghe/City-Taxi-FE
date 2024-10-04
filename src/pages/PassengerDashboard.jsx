@@ -7,16 +7,32 @@ import { request } from "../common/APIManager";
 import * as Constants from "../common/Constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const PassengerDashboard = () => {
   const [currentUser, setCurrentUser] = useState();
   const [currentLocation, setCurrentLocation] = useState(null);
+  const [trip, setTrip] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
+    currentPassenger();
     getCurrentLocation();
-    setCurrentUser(getUser());
     updateCurrentLocation();
+    onGoingTripDetails();
   }, []);
+
+  const currentPassenger = async () => {
+    const url = `v1/trip/passenger/${getUser().userId}`;
+    await request(url, Constants.GET)
+      .then((response) => {
+        setCurrentUser(response);
+      })
+      .catch((error) => {
+        console.log("ER : ", error);
+      });
+  };
 
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
@@ -40,6 +56,19 @@ const PassengerDashboard = () => {
       }&latitude=${currentLocation.lat}`;
 
       await request(url, Constants.PUT);
+    }
+  };
+
+  const onGoingTripDetails = () => {
+    if (currentUser && currentUser.onTrip) {
+      const url = `v1/trip/passenger?passengerId=${getUser().userId}`;
+      request(url, Constants.GET)
+        .then((response) => {
+          setTrip(response);
+        })
+        .catch((error) => {
+          console.log("ER : ", error);
+        });
     }
   };
 
@@ -75,9 +104,19 @@ const PassengerDashboard = () => {
     },
   ];
 
+  const confirmPayment = () => {
+    navigate("/payment", {
+      state: { tripId: trip.id },
+    });
+  };
+
   return (
     <>
-      {getUser().onTrip && <div className="banner">ON A TRIP</div>}
+      {currentUser && currentUser.onTrip && (
+        <div className="banner" onClick={confirmPayment}>
+          ON A TRIP
+        </div>
+      )}
       <Container className="mt-5">
         <Row>
           {/* Profile Card */}
