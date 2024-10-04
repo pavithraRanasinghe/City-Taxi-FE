@@ -18,7 +18,6 @@ import * as Constants from "../common/Constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getUser } from "../common/PersistanceManager";
-import PassengerSideNav from "../components/PassengerSideNav";
 import { useNavigate } from "react-router-dom";
 
 // Leaflet icon fix
@@ -136,7 +135,6 @@ const Booking = () => {
 
   return (
     <>
-      <PassengerSideNav />
       <Container>
         <div className="text-center mt-4">
           <h1>Taxi Booking Service</h1>

@@ -4,6 +4,7 @@ import Navbar from "react-bootstrap/Navbar";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { getUser } from "../common/PersistanceManager";
 import { useLocation } from "react-router-dom";
+import { ADMIN, DRIVER, PASSENGER } from "../common/Constants";
 
 const AdminSideNav = () => {
   const user = getUser();
@@ -36,9 +37,24 @@ const AdminSideNav = () => {
               </Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
-              <Nav className="justify-content-end flex-grow-1 pe-3">
-                <Nav.Link href="passenger">Home</Nav.Link>
-              </Nav>
+              {getUser().userType === ADMIN && (
+                <Nav className="justify-content-end flex-grow-1 pe-3">
+                  <Nav.Link href="admin">Home</Nav.Link>
+                </Nav>
+              )}
+              {getUser().userType === DRIVER && (
+                <Nav className="justify-content-end flex-grow-1 pe-3">
+                  <Nav.Link href="driver">Home</Nav.Link>
+                </Nav>
+              )}
+              {getUser().userType === PASSENGER && (
+                <Nav className="justify-content-end flex-grow-1 pe-3">
+                  <Nav.Link href="passenger">Home</Nav.Link>
+                  <Nav.Link href="booking" disabled={getUser().onTrip}>
+                    Booking
+                  </Nav.Link>
+                </Nav>
+              )}
             </Offcanvas.Body>
           </Navbar.Offcanvas>
         </Container>

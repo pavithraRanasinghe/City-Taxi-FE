@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Card, Button, Table, Container, Row, Col } from "react-bootstrap";
 import { FaUser, FaHistory, FaClock } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
-import PassengerSideNav from "../components/PassengerSideNav";
 import { getUser } from "../common/PersistanceManager";
 import { request } from "../common/APIManager";
 import * as Constants from "../common/Constants";
@@ -34,15 +33,13 @@ const PassengerDashboard = () => {
       console.error("Location service not ready");
     }
   };
-  const updateCurrentLocation = () => {
+  const updateCurrentLocation = async () => {
     if (currentLocation !== null) {
       const url = `v1/passenger/update-location/${getUser().userId}?longitude=${
         currentLocation.lng
       }&latitude=${currentLocation.lat}`;
 
-      request(url, Constants.PUT).catch((error) => {
-        toast.error("Location not updated");
-      });
+      await request(url, Constants.PUT);
     }
   };
 
@@ -80,8 +77,7 @@ const PassengerDashboard = () => {
 
   return (
     <>
-      <PassengerSideNav />
-
+      {getUser().onTrip && <div className="banner">ON A TRIP</div>}
       <Container className="mt-5">
         <Row>
           {/* Profile Card */}

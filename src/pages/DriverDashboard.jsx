@@ -8,7 +8,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getUser } from "../common/PersistanceManager";
 import "./css/DriverDashboard.css";
-import DriverSideNav from "../components/DriverSideNav";
 
 const DriverDashboard = () => {
   const [completedTripCount, setCompletedTripCount] = useState(0);
@@ -109,7 +108,7 @@ const DriverDashboard = () => {
 
   return (
     <>
-      <DriverSideNav />
+      {getUser().onTrip && <div className="banner">ON A TRIP</div>}
       <Container fluid className="mt-4">
         <h2 className="text-center">Driver Dashboard</h2>
         <div className="driver-status">{driver && driver.status}</div>
