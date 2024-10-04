@@ -74,7 +74,7 @@ const AdminDashboard = () => {
                 {/* Blue icon for drivers */}
                 <h3>{data.totalDrivers}</h3>
                 <p>Total Drivers</p>
-                <Link to="admin/manage-drivers">Manage Drivers</Link>
+                <Link to="manage-drivers">Manage Drivers</Link>
               </Card.Body>
             </Card>
           </Col>
@@ -85,7 +85,7 @@ const AdminDashboard = () => {
                 {/* Green icon for passengers */}
                 <h3>{data.totalPassengers}</h3>
                 <p>Total Passengers</p>
-                <Link to="/admin/manage-passengers">Manage Passengers</Link>
+                <Link to="manage-passengers">Manage Passengers</Link>
               </Card.Body>
             </Card>
           </Col>

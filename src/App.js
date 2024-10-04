@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 import Register from "./pages/Register";
 import LogIn from "./pages/Login";
@@ -20,12 +20,13 @@ import OngoingTrip from "./pages/OngoingTrip";
 import FinanceReport from "./pages/FinanceReport";
 import AdminRequireAuth from "./components/AdminRequireAuth";
 import AdminSideNav from "./components/AdminSideNav";
-import { getUser } from "./common/PersistanceManager";
 
 function App() {
+  const location = useLocation();
   return (
     <>
-      {getUser() !== null && <AdminSideNav />}
+      {!location.pathname.startsWith("/register") &&
+        !location.pathname.startsWith("/login") && <AdminSideNav />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="login" element={<LogIn />} />
@@ -34,10 +35,11 @@ function App() {
         <Route path="trips" element={<OngoingTrip />} />
         <Route path="admin" element={<Admin />} />
         <Route path="admin/manage-passenger" element={<ManagePassengers />} />
-        <Route path="admin/manage-drivers" element={<ManageDrivers />} />
         <Route path="viewDrivers" element={<ViewDriver />} />
         <Route path="viewPassenger" element={<ViewPassenger />} />
-        <Route element={<AdminRequireAuth />}></Route>
+        <Route element={<AdminRequireAuth />}>
+          <Route path="admin/manage-drivers" element={<ManageDrivers />} />
+        </Route>
         <Route path="finance" element={<FinanceReport />} />
         <Route element={<DriverRequireAuth />}>
           <Route path="driver" element={<DriverDashboard />} />

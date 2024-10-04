@@ -5,6 +5,7 @@ import Offcanvas from "react-bootstrap/Offcanvas";
 import { getUser } from "../common/PersistanceManager";
 import { useLocation } from "react-router-dom";
 import { ADMIN, DRIVER, PASSENGER } from "../common/Constants";
+import { LogOut, LogOutUser } from "../common/UserManager";
 
 const AdminSideNav = () => {
   const user = getUser();
@@ -36,25 +37,39 @@ const AdminSideNav = () => {
                 Menu
               </Offcanvas.Title>
             </Offcanvas.Header>
-            <Offcanvas.Body>
-              {getUser().userType === ADMIN && (
-                <Nav className="justify-content-end flex-grow-1 pe-3">
-                  <Nav.Link href="admin">Home</Nav.Link>
-                </Nav>
-              )}
-              {getUser().userType === DRIVER && (
-                <Nav className="justify-content-end flex-grow-1 pe-3">
-                  <Nav.Link href="driver">Home</Nav.Link>
-                </Nav>
-              )}
-              {getUser().userType === PASSENGER && (
-                <Nav className="justify-content-end flex-grow-1 pe-3">
-                  <Nav.Link href="passenger">Home</Nav.Link>
-                  <Nav.Link href="booking" disabled={getUser().onTrip}>
-                    Booking
-                  </Nav.Link>
-                </Nav>
-              )}
+            <Offcanvas.Body
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+              }}
+            >
+              <div style={{ flex: 1 }}>
+                {getUser().userType === ADMIN && (
+                  <Nav className="justify-content-end flex-grow-1 pe-3">
+                    <Nav.Link href="admin">Home</Nav.Link>
+                    <Nav.Link href="manage-driver">Drivers</Nav.Link>
+                    <Nav.Link href="manage-passenger">Passengers</Nav.Link>
+                  </Nav>
+                )}
+                {getUser().userType === DRIVER && (
+                  <Nav className="justify-content-end flex-grow-1 pe-3">
+                    <Nav.Link href="driver">Home</Nav.Link>
+                  </Nav>
+                )}
+                {getUser().userType === PASSENGER && (
+                  <Nav className="justify-content-end flex-grow-1 pe-3">
+                    <Nav.Link href="passenger">Home</Nav.Link>
+                    <Nav.Link href="booking" disabled={getUser().onTrip}>
+                      Booking
+                    </Nav.Link>
+                  </Nav>
+                )}
+              </div>
+              {/* Add Logout Link at the bottom */}
+              <Nav className="justify-content-end pe-3">
+                <Nav.Link onClick={() => LogOut()}>Logout</Nav.Link>
+              </Nav>
             </Offcanvas.Body>
           </Navbar.Offcanvas>
         </Container>
