@@ -33,8 +33,8 @@ function App() {
         <Route path="payment" element={<Payment />} />
         <Route path="trips" element={<OngoingTrip />} />
         <Route path="admin" element={<Admin />} />
-        <Route path="managePassenger" element={<ManagePassengers />} />
-        <Route path="manageDrivers" element={<ManageDrivers />} />
+        <Route path="admin/manage-passenger" element={<ManagePassengers />} />
+        <Route path="admin/manage-drivers" element={<ManageDrivers />} />
         <Route path="viewDrivers" element={<ViewDriver />} />
         <Route path="viewPassenger" element={<ViewPassenger />} />
         <Route element={<AdminRequireAuth />}></Route>

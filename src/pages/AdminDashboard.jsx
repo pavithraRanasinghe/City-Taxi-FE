@@ -17,44 +17,6 @@ const AdminDashboard = () => {
   const [recentActivities, setRecentActivities] = useState([]);
   const [recentFeedbacks, setRecentFeedbacks] = useState([]);
 
-  // Sample activities data for demonstration
-  const [activities, setActivities] = useState([
-    {
-      driverName: "John Doe",
-      action: "Completed a trip to Downtown",
-      timestamp: "2024-09-25T14:48:00Z",
-    },
-    {
-      driverName: "Jane Smith",
-      action: "Updated vehicle details",
-      timestamp: "2024-09-25T13:30:00Z",
-    },
-    {
-      driverName: "Sam Lee",
-      action: "Changed availability to AVAILABLE",
-      timestamp: "2024-09-25T12:15:00Z",
-    },
-  ]);
-
-  // Sample feedback data for demonstration
-  const [feedback, setFeedback] = useState([
-    {
-      passengerName: "Passenger 1",
-      feedback: "Rated Driver 1 - 5 Stars",
-      timestamp: "2024-09-25T14:00:00Z",
-    },
-    {
-      passengerName: "Passenger 2",
-      feedback: "Rated Driver 2 - 4 Stars",
-      timestamp: "2024-09-25T13:15:00Z",
-    },
-    {
-      passengerName: "Passenger 3",
-      feedback: "Reported an issue with the trip",
-      timestamp: "2024-09-25T12:00:00Z",
-    },
-  ]);
-
   useEffect(() => {
     // Fetch data for the dashboard
     const fetchData = async () => {
@@ -112,7 +74,7 @@ const AdminDashboard = () => {
                 {/* Blue icon for drivers */}
                 <h3>{data.totalDrivers}</h3>
                 <p>Total Drivers</p>
-                <Link to="/admin/manage-drivers">Manage Drivers</Link>
+                <Link to="admin/manage-drivers">Manage Drivers</Link>
               </Card.Body>
             </Card>
           </Col>
@@ -193,7 +155,7 @@ const AdminDashboard = () => {
                 <h5>Recent Passenger Feedback</h5>
               </Card.Header>
               <ListGroup variant="flush">
-                {feedback.length === 0 ? (
+                {recentFeedbacks.length === 0 ? (
                   <ListGroup.Item>No recent feedback found.</ListGroup.Item>
                 ) : (
                   recentFeedbacks.map((item, index) => {

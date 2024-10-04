@@ -4,12 +4,41 @@ import { FaSearch, FaCar, FaStar, FaFilePdf } from "react-icons/fa";
 import { jsPDF } from "jspdf"; // Import jsPDF for PDF generation
 import { useNavigate } from "react-router-dom"; // Replaced useHistory with useNavigate
 import "bootstrap/dist/css/bootstrap.min.css";
+import { request } from "../common/APIManager";
+import * as Constants from "../common/Constants";
 
 // Dummy Driver Data
 const driversData = [
-  { id: 1, name: "John Doe", email: "johndoe@taxi.com", phone: "555-1234", status: "Active", experience: "5 years", rating: 4.5, bio: "John has been a professional driver for 5 years. He is known for his friendly demeanor and timely service." },
-  { id: 2, name: "Jane Smith", email: "janesmith@taxi.com", phone: "555-5678", status: "Inactive", experience: "3 years", rating: 4.0, bio: "Jane is a dedicated driver with 3 years of experience. She ensures a comfortable and safe ride for her passengers." },
-  { id: 3, name: "Sam Lee", email: "samlee@taxi.com", phone: "555-9876", status: "Active", experience: "4 years", rating: 4.3, bio: "Sam has been driving for 4 years and has a reputation for efficiency and professionalism." },
+  {
+    id: 1,
+    name: "John Doe",
+    email: "johndoe@taxi.com",
+    phone: "555-1234",
+    status: "Active",
+    experience: "5 years",
+    rating: 4.5,
+    bio: "John has been a professional driver for 5 years. He is known for his friendly demeanor and timely service.",
+  },
+  {
+    id: 2,
+    name: "Jane Smith",
+    email: "janesmith@taxi.com",
+    phone: "555-5678",
+    status: "Inactive",
+    experience: "3 years",
+    rating: 4.0,
+    bio: "Jane is a dedicated driver with 3 years of experience. She ensures a comfortable and safe ride for her passengers.",
+  },
+  {
+    id: 3,
+    name: "Sam Lee",
+    email: "samlee@taxi.com",
+    phone: "555-9876",
+    status: "Active",
+    experience: "4 years",
+    rating: 4.3,
+    bio: "Sam has been driving for 4 years and has a reputation for efficiency and professionalism.",
+  },
 ];
 
 const ManageDrivers = () => {
@@ -19,11 +48,20 @@ const ManageDrivers = () => {
   const navigate = useNavigate(); // Use navigate for page navigation
 
   useEffect(() => {
-    // In a real-world app, this data would be fetched from the server
-    setDrivers(driversData);
-    setFilteredDrivers(driversData);
+    loadDrivers();
   }, []);
 
+  const loadDrivers = () => {
+    const url = "v1/driver";
+    request(url, Constants.GET)
+      .then((response) => {
+        setDrivers(response);
+        setFilteredDrivers(response);
+      })
+      .catch((error) => {
+        console.log("Divers not loaded ", error);
+      });
+  };
   // Handle search input
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
@@ -48,7 +86,9 @@ const ManageDrivers = () => {
 
     // Table headers
     doc.autoTable({
-      head: [["ID", "Name", "Email", "Phone", "Status", "Experience", "Rating"]],
+      head: [
+        ["ID", "Name", "Email", "Phone", "Status", "Experience", "Rating"],
+      ],
       body: filteredDrivers.map((driver) => [
         driver.id,
         driver.name,
@@ -108,29 +148,40 @@ const ManageDrivers = () => {
               <Card.Body>
                 <div className="d-flex align-items-center mb-3">
                   {/* Driver Icon */}
-                  <FaCar size={40} className="mr-3" />
+                  <FaCar size={40} style={{ marginRight: "1rem" }} />
                   <div>
-                    <h5 className="mb-1">{driver.name}</h5>
+                    <h5 className="mb-1">
+                      {driver.firstName} {driver.lastName}
+                    </h5>
                     <p className="mb-0 text-muted">{driver.email}</p>
                   </div>
                 </div>
 
                 <Card.Text>
-                  <strong>Phone:</strong> {driver.phone}
+                  <strong>Phone:</strong> {driver.contact}
                   <br />
                   <strong>Status:</strong>{" "}
-                  <span className={driver.status === "Active" ? "text-success" : "text-danger"}>
+                  <span
+                    className={
+                      driver.status === "AVAILABLE"
+                        ? "text-success"
+                        : "text-danger"
+                    }
+                  >
                     {driver.status}
                   </span>
-                  <br />
-                  <strong>Experience:</strong> {driver.experience}
                   <br />
                   <strong>Rating:</strong>{" "}
                   <span className="text-warning">
                     {[...Array(5)].map((star, i) => (
-                      <FaStar key={i} color={i < Math.round(driver.rating) ? "gold" : "lightgray"} />
+                      <FaStar
+                        key={i}
+                        color={
+                          i < Math.round(driver.rate) ? "gold" : "lightgray"
+                        }
+                      />
                     ))}{" "}
-                    {driver.rating}
+                    {driver.rate}
                   </span>
                 </Card.Text>
               </Card.Body>
@@ -139,12 +190,14 @@ const ManageDrivers = () => {
                 {/* Action Buttons */}
                 <Button
                   variant="outline-primary"
-                  className="mr-2"
+                  style={{ marginRight: "1rem" }}
                   onClick={() => viewProfileDriver(driver.id)} // Navigate to the profile page
                 >
                   View Profile
                 </Button>
-                <Button variant={driver.status === "Active" ? "danger" : "success"}>
+                <Button
+                  variant={driver.status === "Active" ? "danger" : "success"}
+                >
                   {driver.status === "Active" ? "Deactivate" : "Activate"}
                 </Button>
               </Card.Footer>
