@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, ListGroup } from 'react-bootstrap';
 import { FaUsers, FaCar, FaMoneyBillWave, FaMapMarkedAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import Loader from '../components/Loader';
-import { request } from '../common/APIManager'; // Assuming you have an APIManager for handling requests
-import AdminSideNav from "../components/AdminSideNav";
+import { request } from "../common/APIManager";
+import * as Constants from "../common/Constants";
 
 const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -14,6 +13,9 @@ const AdminDashboard = () => {
     ongoingTrips: 0,
     totalEarnings: 0,
   });
+
+  const [recentActivities, setRecentActivities] = useState([]);
+  const [recentFeedbacks, setRecentFeedbacks] = useState([]);
 
   // Sample activities data for demonstration
   const [activities, setActivities] = useState([
@@ -57,12 +59,12 @@ const AdminDashboard = () => {
     // Fetch data for the dashboard
     const fetchData = async () => {
       try {
-        const response = await request("/admin/dashboard-stats", "GET"); // Example API call
+        const response = await request("v1/dashboard", Constants.GET);
         setData({
-          totalDrivers: response.totalDrivers,
-          totalPassengers: response.totalPassengers,
-          ongoingTrips: response.ongoingTrips,
-          totalEarnings: response.totalEarnings,
+          totalDrivers: response.driverCount,
+          totalPassengers: response.passengerCount,
+          ongoingTrips: response.onGoingTripCount,
+          totalEarnings: response.totalEarning,
         });
         // Fetch activities data as well if needed
       } catch (error) {
@@ -73,15 +75,33 @@ const AdminDashboard = () => {
     };
 
     fetchData();
+    loadRecentActivity();
+    loadRecentFeedbacks();
   }, []);
 
-  if (loading) {
-    return <Loader />;
-  }
+  const loadRecentActivity = () => {
+    const url = "v1/trip/recent-activity";
+    request(url, Constants.GET)
+      .then((response) => {
+        setRecentActivities(response);
+      })
+      .catch((error) => {
+        console.log("NO RECENT ACTIVITIES ", error);
+      });
+  };
 
+  const loadRecentFeedbacks = () => {
+    const url = "v1/feedback/recent-feedback";
+    request(url, Constants.GET)
+      .then((response) => {
+        setRecentFeedbacks(response);
+      })
+      .catch((error) => {
+        console.log("NO RECENT Feedbacks ", error);
+      });
+  };
   return (
     <>
-      <AdminSideNav />
       <Container fluid>
         <h2 className="my-4">Admin Dashboard</h2>
         <Row className="mb-4">
@@ -135,33 +155,40 @@ const AdminDashboard = () => {
           <Col md={6}>
             <Card className="mt-4">
               <Card.Header className="bg-primary text-white">
-                <h5>Recent Driver Activity</h5>
+                <h5>Recent Trip Activities</h5>
               </Card.Header>
               <ListGroup variant="flush">
-                {activities.length === 0 ? (
+                {recentActivities.length === 0 ? (
                   <ListGroup.Item>No recent activities found.</ListGroup.Item>
                 ) : (
-                  activities.map((activity, index) => (
-                    <ListGroup.Item
-                      key={index}
-                      className="d-flex justify-content-between align-items-center"
-                    >
-                      <div>
-                        <strong>{activity.driverName}</strong> -{" "}
-                        {activity.action}
-                      </div>
-                      <div className="text-muted">
-                        {new Date(activity.timestamp).toLocaleString()}
-                      </div>
-                    </ListGroup.Item>
-                  ))
+                  recentActivities.map((activity, index) => {
+                    const combinedDateTime = `${activity.date}T${activity.startTime}`;
+                    const formattedDateTime = new Date(
+                      combinedDateTime
+                    ).toLocaleString();
+                    return (
+                      <ListGroup.Item
+                        key={index}
+                        className="d-flex justify-content-between align-items-center"
+                      >
+                        <div>
+                          <strong>
+                            {activity.driver.firstName}{" "}
+                            {activity.driver.lastName}
+                          </strong>{" "}
+                          - {activity.status}
+                        </div>
+                        <div className="text-muted">{formattedDateTime}</div>
+                      </ListGroup.Item>
+                    );
+                  })
                 )}
               </ListGroup>
             </Card>
           </Col>
 
           <Col md={6}>
-            <Card className="mt-4">
+            <Card className="mt-4 mb-4">
               <Card.Header className="bg-warning text-white">
                 <h5>Recent Passenger Feedback</h5>
               </Card.Header>
@@ -169,19 +196,71 @@ const AdminDashboard = () => {
                 {feedback.length === 0 ? (
                   <ListGroup.Item>No recent feedback found.</ListGroup.Item>
                 ) : (
-                  feedback.map((item, index) => (
-                    <ListGroup.Item
-                      key={index}
-                      className="d-flex justify-content-between align-items-center"
-                    >
-                      <div>
-                        <strong>{item.passengerName}</strong> - {item.feedback}
-                      </div>
-                      <div className="text-muted">
-                        {new Date(item.timestamp).toLocaleString()}
-                      </div>
-                    </ListGroup.Item>
-                  ))
+                  recentFeedbacks.map((item, index) => {
+                    const combinedDateTime = `${item.date}T${item.time}`;
+                    const formattedDateTime = new Date(
+                      combinedDateTime
+                    ).toLocaleString();
+                    return (
+                      <ListGroup.Item
+                        key={index}
+                        className="d-flex justify-content-between align-items-center"
+                      >
+                        <Row>
+                          <Col xs="6">
+                            <div>
+                              P :
+                              <strong>
+                                {" "}
+                                {item.passenger.firstName}{" "}
+                                {item.passenger.lastName}
+                              </strong>{" "}
+                            </div>
+                          </Col>
+                          <Col xs="6">
+                            <div>
+                              D :
+                              <strong>
+                                {" "}
+                                {item.driver.firstName} {item.driver.lastName}
+                              </strong>{" "}
+                            </div>
+                          </Col>
+                          <Row style={{ marginLeft: "1px" }}>
+                            {item.comment}
+                          </Row>
+                          <Col>
+                            <Row>
+                              <Col>
+                                <div className="text-muted mt-3">
+                                  {formattedDateTime}
+                                </div>
+                              </Col>
+                              <Col>
+                                <div>
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <span
+                                      key={star}
+                                      style={{
+                                        cursor: "pointer",
+                                        fontSize: "2rem",
+                                        color:
+                                          star <= item.rate ? "gold" : "gray",
+                                      }}
+                                      role="img"
+                                      aria-label={`${star} stars`}
+                                    >
+                                      {star <= item.rate ? "★" : "☆"}
+                                    </span>
+                                  ))}
+                                </div>
+                              </Col>
+                            </Row>
+                          </Col>
+                        </Row>
+                      </ListGroup.Item>
+                    );
+                  })
                 )}
               </ListGroup>
             </Card>

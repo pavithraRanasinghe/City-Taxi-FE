@@ -32,13 +32,12 @@ function App() {
         <Route path="register" element={<Register />} />
         <Route path="payment" element={<Payment />} />
         <Route path="trips" element={<OngoingTrip />} />
-        <Route element={<AdminRequireAuth />}>
-          <Route path="admin" element={<Admin />} />
-          <Route path="managePassenger" element={<ManagePassengers />} />
-          <Route path="manageDrivers" element={<ManageDrivers />} />
-          <Route path="viewDrivers" element={<ViewDriver />} />
-          <Route path="viewPassenger" element={<ViewPassenger />} />
-        </Route>
+        <Route path="admin" element={<Admin />} />
+        <Route path="managePassenger" element={<ManagePassengers />} />
+        <Route path="manageDrivers" element={<ManageDrivers />} />
+        <Route path="viewDrivers" element={<ViewDriver />} />
+        <Route path="viewPassenger" element={<ViewPassenger />} />
+        <Route element={<AdminRequireAuth />}></Route>
         <Route path="finance" element={<FinanceReport />} />
         <Route element={<DriverRequireAuth />}>
           <Route path="driver" element={<DriverDashboard />} />

@@ -38,6 +38,9 @@ const PaymentView = () => {
         Constants.PUT
       );
       toast.success("Payment success");
+      navigate("/rating", {
+        state: { tripId: tripId },
+      });
       setPaymentStatus(response.status);
     } catch (error) {
       toast.error("Ride payment failed");
