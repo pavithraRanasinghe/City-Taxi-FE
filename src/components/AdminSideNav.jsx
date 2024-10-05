@@ -47,7 +47,7 @@ const AdminSideNav = () => {
               <div style={{ flex: 1 }}>
                 {getUser().userType === ADMIN && (
                   <Nav className="justify-content-end flex-grow-1 pe-3">
-                    <Nav.Link href="admin">Home</Nav.Link>
+                    <Nav.Link href="/admin">Home</Nav.Link>
                     <Nav.Link href="manage-driver">Drivers</Nav.Link>
                     <Nav.Link href="manage-passenger">Passengers</Nav.Link>
                   </Nav>

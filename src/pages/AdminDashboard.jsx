@@ -85,7 +85,7 @@ const AdminDashboard = () => {
                 {/* Green icon for passengers */}
                 <h3>{data.totalPassengers}</h3>
                 <p>Total Passengers</p>
-                <Link to="manage-passengers">Manage Passengers</Link>
+                <Link to="manage-passenger">Manage Passengers</Link>
               </Card.Body>
             </Card>
           </Col>

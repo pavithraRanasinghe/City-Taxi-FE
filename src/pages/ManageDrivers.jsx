@@ -9,40 +9,6 @@ import { request } from "../common/APIManager";
 import * as Constants from "../common/Constants";
 import generateExcelFile from "../util/fileUtil";
 
-// Dummy Driver Data
-const driversData = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "johndoe@taxi.com",
-    phone: "555-1234",
-    status: "Active",
-    experience: "5 years",
-    rating: 4.5,
-    bio: "John has been a professional driver for 5 years. He is known for his friendly demeanor and timely service.",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    email: "janesmith@taxi.com",
-    phone: "555-5678",
-    status: "Inactive",
-    experience: "3 years",
-    rating: 4.0,
-    bio: "Jane is a dedicated driver with 3 years of experience. She ensures a comfortable and safe ride for her passengers.",
-  },
-  {
-    id: 3,
-    name: "Sam Lee",
-    email: "samlee@taxi.com",
-    phone: "555-9876",
-    status: "Active",
-    experience: "4 years",
-    rating: 4.3,
-    bio: "Sam has been driving for 4 years and has a reputation for efficiency and professionalism.",
-  },
-];
-
 const ManageDrivers = () => {
   const [drivers, setDrivers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -82,7 +48,7 @@ const ManageDrivers = () => {
   };
 
   // Function to generate PDF report
-  const exportPDF = async () => {
+  const exportReport = async () => {
     try {
       const jsonData = filteredDrivers.map((driver) => [
         driver.id,
@@ -102,9 +68,8 @@ const ManageDrivers = () => {
         { header: "Status", key: "status", width: 15 },
         { header: "Rate", key: "rate", width: 10 },
       ];
-      // const jsonData = JSON.stringify(aa);
-      console.log("JSON : ", jsonData);
       await generateExcelFile(headers, jsonData, "Drivers");
+      toast.success("Report generated successful");
     } catch (error) {
       console.log("ER : ", error);
       toast.error("Failed generate Report");
@@ -113,7 +78,7 @@ const ManageDrivers = () => {
 
   // Navigate to Driver Profile page
   const viewProfileDriver = (driverId) => {
-    navigate(`/driver/${driverId}`); // Use navigate instead of history.push
+    navigate(`/driver/${driverId}`);
   };
 
   const onActivate = (driverId, toActive) => {
@@ -156,8 +121,8 @@ const ManageDrivers = () => {
         {/* Export PDF Button */}
         <Row className="mb-4">
           <Col className="text-right">
-            <Button variant="danger" onClick={exportPDF}>
-              <FaFilePdf /> Export PDF
+            <Button variant="success" onClick={exportReport}>
+              <FaFilePdf /> Export Report
             </Button>
           </Col>
         </Row>
