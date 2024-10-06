@@ -20,6 +20,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { getUser } from "../common/PersistanceManager";
 import { useNavigate } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
+import RoutingMachine from "../components/RouteMachine";
 
 // Leaflet icon fix
 delete L.Icon.Default.prototype._getIconUrl;
@@ -215,6 +216,10 @@ const CallOperatorBooking = () => {
             {dropoffLocation && <Marker position={dropoffLocation} />}
 
             <LocationSelector />
+            <RoutingMachine
+              pickupLocation={pickupLocation}
+              dropoffLocation={dropoffLocation}
+            />
           </MapContainer>
           <Button
             className="btn-clear"
