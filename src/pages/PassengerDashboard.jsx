@@ -13,6 +13,7 @@ const PassengerDashboard = () => {
   const [currentUser, setCurrentUser] = useState();
   const [currentLocation, setCurrentLocation] = useState(null);
   const [trip, setTrip] = useState(null);
+  const [tripList, setTripList] = useState([]);
 
   const navigate = useNavigate();
 
@@ -21,6 +22,7 @@ const PassengerDashboard = () => {
     getCurrentLocation();
     updateCurrentLocation();
     onGoingTripDetails();
+    loadAllPassengerTrips();
   }, []);
 
   const currentPassenger = async () => {
@@ -59,8 +61,19 @@ const PassengerDashboard = () => {
     }
   };
 
+  const loadAllPassengerTrips = () => {
+    const url = `v1/trip/passenger/${getUser().userId}`;
+    request(url, Constants.GET)
+      .then((response) => {
+        setTripList(response);
+      })
+      .catch((error) => {
+        console.log("ER : ", error);
+      });
+  };
+
   const onGoingTripDetails = () => {
-    const url = `v1/trip/passenger?passengerId=${getUser().userId}`;
+    const url = `v1/trip/confirmed-trip?passengerId=${getUser().userId}`;
     request(url, Constants.GET)
       .then((response) => {
         setTrip(response);
@@ -69,26 +82,6 @@ const PassengerDashboard = () => {
         console.log("ER : ", error);
       });
   };
-
-  // Dummy data for bookings and upcoming rides
-  const bookingHistory = [
-    {
-      id: 1,
-      date: "2023-09-21",
-      driver: "John Doe",
-      car: "Toyota Prius",
-      price: "$25",
-      status: "Completed",
-    },
-    {
-      id: 2,
-      date: "2023-09-15",
-      driver: "Jane Smith",
-      car: "Honda Civic",
-      price: "$30",
-      status: "Completed",
-    },
-  ];
 
   const upcomingRides = [
     {
@@ -149,11 +142,11 @@ const PassengerDashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {bookingHistory.map((booking) => (
+                    {tripList.map((booking) => (
                       <tr key={booking.id}>
                         <td>{booking.date}</td>
-                        <td>{booking.driver}</td>
-                        <td>{booking.car}</td>
+                        <td>{booking.driver.firstName}</td>
+                        <td>{booking.driver.vehicle.name}</td>
                         <td>{booking.price}</td>
                         <td>{booking.status}</td>
                       </tr>
