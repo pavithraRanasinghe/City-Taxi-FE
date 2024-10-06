@@ -30,7 +30,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
 });
 
-const Booking = () => {
+const CallOperatorBooking = () => {
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [pickupLocation, setPickupLocation] = useState(null);
   const [dropoffLocation, setDropoffLocation] = useState(null);
@@ -40,15 +40,27 @@ const Booking = () => {
   const [showDrivers, setShowDrivers] = useState(false);
   const [selectedDriverId, setSelectedDriverId] = useState(null);
 
-  const navigate = useNavigate();
+  // Passenger
+  const [passengerFirstName, setPassengerFirstName] = useState(null);
+  const [passengerLastName, setPassengerLastName] = useState(null);
+  const [passengerContact, setPassengerContact] = useState(null);
+
+  console.log("DriverList : ", driverList);
+
+  const handlePassengerFirstNameChange = (event) => {
+    setPassengerFirstName(event.target.value);
+  };
+
+  const handlePassengerLastNameChange = (event) => {
+    setPassengerLastName(event.target.value);
+  };
+
+  const handlePassengerContactChange = (event) => {
+    setPassengerContact(event.target.value);
+  };
+
   // Geolocation to get user's current location for pickup
   useEffect(() => {
-    const currentUser = getUser();
-
-    if (currentUser.onTrip) {
-      navigate("/passenger", { replace: true });
-    }
-
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -122,12 +134,14 @@ const Booking = () => {
       startLocationName: "START LOC",
       endLocationName: "END LOC",
       driverId: selectedDriver.driverId,
-      passengerId: getUser().userId,
+      passengerFirstName: passengerFirstName,
+      passengerLastName: passengerLastName,
+      passengerContact: passengerContact,
     });
-    const url = "v1/trip";
+    const url = "v1/trip/call-operator/booking";
     request(url, Constants.POST, body)
       .then((response) => {
-        navigate("/passenger", { replace: true });
+        clearField();
         toast.success("Trip Saved");
       })
       .catch(() => {
@@ -135,11 +149,19 @@ const Booking = () => {
       });
   };
 
+  const clearField = () => {
+    clearSelection();
+    setPassengerFirstName("");
+    setPassengerLastName("");
+    setPassengerContact("");
+    setSelectedDriver({});
+  };
+
   return (
     <>
       <Container>
         <div className="text-center mt-4">
-          <h1>Taxi Booking Service</h1>
+          <h1>Operator Trip Booking</h1>
         </div>
 
         {/* Fallback Message when location services are off */}
@@ -150,9 +172,38 @@ const Booking = () => {
           </Alert>
         )}
 
+        <div className="mt-1">
+          <Form>
+            <Form.Group>
+              <Form.Label>Passenger First Name</Form.Label>
+              <Form.Control
+                type="text"
+                value={passengerFirstName}
+                onChange={handlePassengerFirstNameChange}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Passenger Last Name</Form.Label>
+              <Form.Control
+                type="text"
+                value={passengerLastName}
+                onChange={handlePassengerLastNameChange}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Passenger Contact</Form.Label>
+              <Form.Control
+                type="text"
+                value={passengerContact}
+                onChange={handlePassengerContactChange}
+              />
+            </Form.Group>
+          </Form>
+        </div>
+
         {/* Map Section */}
         <div className="mt-5">
-          <h2>Select Pickup & Dropoff Location</h2>
+          <h3>Select Pickup & Dropoff Location</h3>
           <MapContainer
             center={[7.8731, 80.7718]} // Sri Lanka coordinates
             zoom={8}
@@ -291,4 +342,4 @@ const Booking = () => {
   );
 };
 
-export default Booking;
+export default CallOperatorBooking;

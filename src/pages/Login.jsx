@@ -117,6 +117,9 @@ const LogIn = () => {
             case Constants.ADMIN:
               navigate("/admin", { replace: true });
               break;
+            case Constants.OPERATOR:
+              navigate("/call-operator", { replace: true });
+              break;
             default:
               navigate("/login", { replace: true });
               break;

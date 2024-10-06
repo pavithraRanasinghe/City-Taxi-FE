@@ -4,7 +4,7 @@ import Navbar from "react-bootstrap/Navbar";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { getUser } from "../common/PersistanceManager";
 import { useLocation } from "react-router-dom";
-import { ADMIN, DRIVER, PASSENGER } from "../common/Constants";
+import { ADMIN, DRIVER, OPERATOR, PASSENGER } from "../common/Constants";
 import { LogOut } from "../common/UserManager";
 
 const AdminSideNav = () => {
@@ -56,6 +56,12 @@ const AdminSideNav = () => {
                 {getUser().userType === DRIVER && (
                   <Nav className="justify-content-end flex-grow-1 pe-3">
                     <Nav.Link href="driver">Home</Nav.Link>
+                    <Nav.Link href="/trips">Trips</Nav.Link>
+                  </Nav>
+                )}
+                {getUser().userType === OPERATOR && (
+                  <Nav className="justify-content-end flex-grow-1 pe-3">
+                    <Nav.Link href="/all-operator">Home</Nav.Link>
                     <Nav.Link href="/trips">Trips</Nav.Link>
                   </Nav>
                 )}

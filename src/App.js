@@ -20,6 +20,7 @@ import OngoingTrip from "./pages/OngoingTrip";
 import FinanceReport from "./pages/FinanceReport";
 import AdminRequireAuth from "./components/AdminRequireAuth";
 import AdminSideNav from "./components/AdminSideNav";
+import CallOperatorBooking from "./pages/CallOperatorBooking";
 
 function App() {
   const location = useLocation();
@@ -31,10 +32,11 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="login" element={<LogIn />} />
         <Route path="register" element={<Register />} />
-        <Route path="trips" element={<OngoingTrip />} />
         <Route path="admin" element={<Admin />} />
         <Route path="viewDrivers" element={<ViewDriver />} />
         <Route path="viewPassenger" element={<ViewPassenger />} />
+        <Route path="trips" element={<OngoingTrip />} />
+        <Route path="call-operator" element={<CallOperatorBooking />} />
         <Route element={<AdminRequireAuth />}>
           <Route path="admin/manage-drivers" element={<ManageDrivers />} />
           <Route path="admin/manage-passenger" element={<ManagePassengers />} />
