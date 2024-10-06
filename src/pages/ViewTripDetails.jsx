@@ -104,25 +104,15 @@ const ViewTripDetails = () => {
   };
 
   const placeTrip = () => {
-    const body = JSON.stringify({
-      startLongitude: pickupLocation.lng,
-      startLatitude: pickupLocation.lat,
-      endLongitude: dropoffLocation.lng,
-      endLatitude: dropoffLocation.lat,
-      startLocationName: "START LOC",
-      endLocationName: "END LOC",
-      driverId: selectedDriver.driverId,
-      passengerFirstName: passengerFirstName,
-      passengerLastName: passengerLastName,
-      passengerContact: passengerContact,
-    });
-    const url = "v1/trip/call-operator/booking";
-    request(url, Constants.POST, body)
+    const url = `v1/trip/${tripId}/status?status=CONFIRM`;
+    request(url, Constants.PUT)
       .then((response) => {
-        toast.success("Trip Saved");
+        toast.success("Trip Confirmed");
+        navigate("/driver", { replace: true });
       })
-      .catch(() => {
-        toast.error("Failed to book a trip");
+      .catch((error) => {
+        console.log("ERROR : ", error);
+        toast.error("Trip not confirmed");
       });
   };
 

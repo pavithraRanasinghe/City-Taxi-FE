@@ -112,16 +112,6 @@ const DriverDashboard = () => {
     navigate("/view-trip", {
       state: { tripId: tripId },
     });
-    // const url = `v1/trip/${tripId}/status?status=CONFIRM`;
-    // request(url, Constants.PUT)
-    //   .then((response) => {
-    //     toast.success("Trip Confirmed");
-    //     loadTripsByStatus("PENDING");
-    //   })
-    //   .catch((error) => {
-    //     console.log("ERROR : ", error);
-    //     toast.error("Trip not confirmed");
-    //   });
   };
 
   return (
