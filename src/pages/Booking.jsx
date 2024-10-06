@@ -44,6 +44,7 @@ const Booking = () => {
   const [price, setPrice] = useState(0.0);
   const [starLocationName, setStartLocationName] = useState(null);
   const [endLocationName, setEndLocationName] = useState(null);
+  const [distance, setDistance] = useState(null);
 
   const navigate = useNavigate();
   // Geolocation to get user's current location for pickup
@@ -128,7 +129,9 @@ const Booking = () => {
       driverId: selectedDriver.driverId,
       passengerId: getUser().userId,
       price: price,
+      distance: distance,
     });
+
     const url = "v1/trip";
     request(url, Constants.POST, body)
       .then((response) => {
@@ -148,6 +151,7 @@ const Booking = () => {
     const distanceKm = distance / 1000;
     const price = distanceKm * 96;
     setPrice(price);
+    setDistance(distance);
   };
 
   return (
