@@ -21,6 +21,7 @@ import { getUser } from "../common/PersistanceManager";
 import { useNavigate } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
 import RoutingMachine from "../components/RouteMachine";
+import fetchLocationName from "../util/LocationUtil";
 
 // Leaflet icon fix
 delete L.Icon.Default.prototype._getIconUrl;
@@ -41,6 +42,8 @@ const Booking = () => {
   const [showDrivers, setShowDrivers] = useState(false);
   const [selectedDriverId, setSelectedDriverId] = useState(null);
   const [price, setPrice] = useState(0.0);
+  const [starLocationName, setStartLocationName] = useState(null);
+  const [endLocationName, setEndLocationName] = useState(null);
 
   const navigate = useNavigate();
   // Geolocation to get user's current location for pickup
@@ -92,9 +95,13 @@ const Booking = () => {
     useMapEvents({
       click(e) {
         if (clickCount === 0) {
+          const locationName = fetchLocationName(e.latlng.lat, e.latlng.lng);
+          setStartLocationName(locationName);
           setPickupLocation(e.latlng); // First click for pickup location
           setClickCount(1);
         } else if (clickCount === 1) {
+          const locationName = fetchLocationName(e.latlng.lat, e.latlng.lng);
+          setEndLocationName(locationName);
           setDropoffLocation(e.latlng); // Second click for dropoff location
           setClickCount(0);
         }
@@ -116,8 +123,8 @@ const Booking = () => {
       startLatitude: pickupLocation.lat,
       endLongitude: dropoffLocation.lng,
       endLatitude: dropoffLocation.lat,
-      startLocationName: "START LOC",
-      endLocationName: "END LOC",
+      startLocationName: starLocationName,
+      endLocationName: endLocationName,
       driverId: selectedDriver.driverId,
       passengerId: getUser().userId,
       price: price,
