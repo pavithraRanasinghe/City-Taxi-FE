@@ -31,14 +31,13 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="login" element={<LogIn />} />
         <Route path="register" element={<Register />} />
-        <Route path="payment" element={<Payment />} />
         <Route path="trips" element={<OngoingTrip />} />
         <Route path="admin" element={<Admin />} />
-        <Route path="admin/manage-passenger" element={<ManagePassengers />} />
         <Route path="viewDrivers" element={<ViewDriver />} />
         <Route path="viewPassenger" element={<ViewPassenger />} />
         <Route element={<AdminRequireAuth />}>
           <Route path="admin/manage-drivers" element={<ManageDrivers />} />
+          <Route path="admin/manage-passenger" element={<ManagePassengers />} />
         </Route>
         <Route path="finance" element={<FinanceReport />} />
         <Route element={<DriverRequireAuth />}>
@@ -49,6 +48,7 @@ function App() {
           <Route path="passenger" element={<PassengerDashboard />} />
           <Route path="booking" element={<Booking />} />
           <Route path="rating" element={<Rating />} />
+          <Route path="payment" element={<Payment />} />
         </Route>
       </Routes>
     </>

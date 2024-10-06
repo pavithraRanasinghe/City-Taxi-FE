@@ -1,62 +1,108 @@
-import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Card, Button, Container } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Card, Button, Container, Row, Col } from "react-bootstrap";
+import { request } from "../common/APIManager";
+import * as Constants from "../common/Constants";
+import { getUser } from "../common/PersistanceManager";
 
-// Dummy Trip Data
-const ongoingTripsData = [
-  {
-    id: 1,
-    passengerName: "Alice Brown",
-    driverName: "John Doe",
-    vehicle: "Toyota Camry",
-    licensePlate: "XYZ 1234",
-    pickupLocation: "123 Main St, City",
-    dropOffLocation: "456 Elm St, City",
-    status: "Ongoing",
-  },
-  {
-    id: 2,
-    passengerName: "Bob White",
-    driverName: "Jane Smith",
-    vehicle: "Honda Accord",
-    licensePlate: "ABC 5678",
-    pickupLocation: "789 Maple Ave, City",
-    dropOffLocation: "321 Oak St, City",
-    status: "Ongoing",
-  },
-];
+const OngoingTrip = () => {
+  const [selectedStatus, setSelectedStatus] = useState(null);
 
-const OngoingTripDetails = () => {
-  const { tripId } = useParams(); // Get trip ID from route params
-  const navigate = useNavigate(); // Use navigate for going back
+  const [tripList, setTripList] = useState([]);
+  const currentUser = getUser();
 
-  // Find the ongoing trip based on the ID
-  const trip = ongoingTripsData.find((t) => t.id === parseInt(tripId));
+  useEffect(() => {
+    console.log("USE EFFECT");
+    loadData("PENDING");
+  }, []);
 
-  if (!trip) {
-    return <p>Trip not found</p>;
-  }
+  const loadData = (status) => {
+    setSelectedStatus(status);
+    const url = `v1/trip/status/${currentUser.userType.toLowerCase()}?status=${status}&id=${
+      currentUser.userId
+    }`;
+
+    request(url, Constants.GET).then((response) => {
+      setTripList(response);
+    });
+  };
 
   return (
     <Container className="mt-5">
-      <Button variant="secondary" onClick={() => navigate(-1)} className="mb-4">
-        Back to Ongoing Trips
-      </Button>
+      <Row>
+        <Col>
+          <Button
+            variant="primary"
+            className="mb-4"
+            disabled={selectedStatus === "PENDING"}
+            onClick={() => {
+              loadData("PENDING");
+            }}
+          >
+            PENDING
+          </Button>
+        </Col>
+        <Col>
+          <Button
+            variant="primary"
+            className="mb-4"
+            disabled={selectedStatus === "CONFIRM"}
+            onClick={() => {
+              loadData("CONFIRM");
+            }}
+          >
+            ON GOING
+          </Button>
+        </Col>
+        <Col>
+          <Button
+            variant="primary"
+            className="mb-4"
+            disabled={selectedStatus === "COMPLETE"}
+            onClick={() => {
+              loadData("COMPLETE");
+            }}
+          >
+            COMPLETED
+          </Button>
+        </Col>
+      </Row>
 
-      <Card className="shadow-sm">
-        <Card.Body>
-          <h2>Ongoing Trip Details</h2>
-          <p><strong>Passenger Name:</strong> {trip.passengerName}</p>
-          <p><strong>Driver Name:</strong> {trip.driverName}</p>
-          <p><strong>Vehicle:</strong> {trip.vehicle}</p>
-          <p><strong>License Plate:</strong> {trip.licensePlate}</p>
-          <p><strong>Pickup Location:</strong> {trip.pickupLocation}</p>
-          <p><strong>Drop-Off Location:</strong> {trip.dropOffLocation}</p>
-          <p><strong>Status:</strong> <span className="text-success">{trip.status}</span></p>
-        </Card.Body>
-      </Card>
+      {tripList.map((trip) => {
+        return (
+          <Card className="shadow-sm mb-2">
+            <Card.Body>
+              <h3>Trip ID - {trip.id}</h3>
+              <p>
+                <strong>Passenger Name:</strong> {trip.passenger.firstName}{" "}
+                {trip.passenger.lastName}
+              </p>
+              <p>
+                <strong>Driver Name:</strong> {trip.driver.firstName}{" "}
+                {trip.driver.lastName}
+              </p>
+              <p>
+                <strong>Vehicle:</strong> {trip.driver.vehicle.name} -{" "}
+              </p>
+              <p>
+                <strong>License Plate:</strong>{" "}
+                {trip.driver.vehicle.vehicleNumber}
+              </p>
+              <p>
+                <strong>Pickup Location:</strong> {trip.startLocationName}
+              </p>
+              <p>
+                <strong>Drop-Off Location:</strong> {trip.endLocationName}
+              </p>
+              <p>
+                <strong>Status:</strong>{" "}
+                <span className="text-success">{trip.status}</span>
+              </p>
+            </Card.Body>
+          </Card>
+        );
+      })}
     </Container>
   );
 };
 
-export default OngoingTripDetails;
+export default OngoingTrip;

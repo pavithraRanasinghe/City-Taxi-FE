@@ -5,7 +5,7 @@ import Offcanvas from "react-bootstrap/Offcanvas";
 import { getUser } from "../common/PersistanceManager";
 import { useLocation } from "react-router-dom";
 import { ADMIN, DRIVER, PASSENGER } from "../common/Constants";
-import { LogOut, LogOutUser } from "../common/UserManager";
+import { LogOut } from "../common/UserManager";
 
 const AdminSideNav = () => {
   const user = getUser();
@@ -50,11 +50,13 @@ const AdminSideNav = () => {
                     <Nav.Link href="/admin">Home</Nav.Link>
                     <Nav.Link href="manage-driver">Drivers</Nav.Link>
                     <Nav.Link href="manage-passenger">Passengers</Nav.Link>
+                    <Nav.Link href="/trips">Trips</Nav.Link>
                   </Nav>
                 )}
                 {getUser().userType === DRIVER && (
                   <Nav className="justify-content-end flex-grow-1 pe-3">
                     <Nav.Link href="driver">Home</Nav.Link>
+                    <Nav.Link href="/trips">Trips</Nav.Link>
                   </Nav>
                 )}
                 {getUser().userType === PASSENGER && (
@@ -63,6 +65,7 @@ const AdminSideNav = () => {
                     <Nav.Link href="booking" disabled={getUser().onTrip}>
                       Booking
                     </Nav.Link>
+                    <Nav.Link href="/trips">Trips</Nav.Link>
                   </Nav>
                 )}
               </div>
