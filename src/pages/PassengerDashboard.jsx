@@ -24,7 +24,7 @@ const PassengerDashboard = () => {
   }, []);
 
   const currentPassenger = async () => {
-    const url = `v1/trip/passenger/${getUser().userId}`;
+    const url = `v1/passenger/${getUser().userId}`;
     await request(url, Constants.GET)
       .then((response) => {
         setCurrentUser(response);

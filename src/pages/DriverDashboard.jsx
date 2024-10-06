@@ -8,14 +8,16 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getUser } from "../common/PersistanceManager";
 import "./css/DriverDashboard.css";
+import { useNavigate } from "react-router-dom";
 
 const DriverDashboard = () => {
+  const navigate = useNavigate();
+
   const [completedTripCount, setCompletedTripCount] = useState(0);
   const [ongoingTripCount, setOngoingTripCount] = useState(0);
   const [ongoingTrips, setOngoingTrips] = useState([]);
   const [earnings, setEarnings] = useState(150.0);
   const [rating, setRating] = useState(4.8);
-
   const [currentLocation, setCurrentLocation] = useState(null);
   const [locationError, setLocationError] = useState(false);
   const [driver, setDriver] = useState(null);
@@ -25,7 +27,7 @@ const DriverDashboard = () => {
     getCurrentLocation();
     loadDashboardData();
     loadTripsByStatus("PENDING");
-    // updateCurrentLocation();
+    updateCurrentLocation();
     findDriver();
   }, []);
 
@@ -74,9 +76,7 @@ const DriverDashboard = () => {
   };
 
   const loadTripsByStatus = (status) => {
-    const url = `v1/trip/trips/driver?driverId=${
-      getUser().userId
-    }&status=${status}`;
+    const url = `v1/trip/driver?driverId=${getUser().userId}&status=${status}`;
 
     request(url, Constants.GET)
       .then((response) => {
@@ -90,7 +90,6 @@ const DriverDashboard = () => {
   const findDriver = () => {
     const url = `v1/driver/${getUser().userId}`;
     request(url, Constants.GET).then((response) => {
-      console.log(response);
       switch (response.status) {
         case "AVAILABLE":
           setStatusColor("blue");
@@ -110,22 +109,29 @@ const DriverDashboard = () => {
   };
 
   const onAccept = (tripId) => {
-    const url = `v1/trip/${tripId}/status?status=CONFIRM`;
-    request(url, Constants.PUT)
-      .then((response) => {
-        toast.success("Trip Confirmed");
-        loadTripsByStatus("PENDING");
-      })
-      .catch((error) => {
-        console.log("ERROR : ", error);
-        toast.error("Trip not confirmed");
-      });
+    navigate("/view-trip", {
+      state: { tripId: tripId },
+    });
+    // const url = `v1/trip/${tripId}/status?status=CONFIRM`;
+    // request(url, Constants.PUT)
+    //   .then((response) => {
+    //     toast.success("Trip Confirmed");
+    //     loadTripsByStatus("PENDING");
+    //   })
+    //   .catch((error) => {
+    //     console.log("ERROR : ", error);
+    //     toast.error("Trip not confirmed");
+    //   });
   };
 
   return (
     <>
-      {getUser().onTrip && (
-        <div className="banner" style={{ backgroundColor: statusColor }}>
+      {driver && (
+        <div
+          className="banner"
+          style={{ backgroundColor: statusColor }}
+          onClick={() => onAccept(7)}
+        >
           {driver && driver.status}
         </div>
       )}
@@ -160,7 +166,7 @@ const DriverDashboard = () => {
                             variant="success"
                             onClick={() => onAccept(tripDetail.id)}
                           >
-                            ACCEPT
+                            View Details
                           </Button>
                         </Col>
                       </Row>

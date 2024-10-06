@@ -17,8 +17,8 @@ import { request } from "../common/APIManager";
 import * as Constants from "../common/Constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { FaStar } from "react-icons/fa";
 import RoutingMachine from "../components/RouteMachine";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // Leaflet icon fix
 delete L.Icon.Default.prototype._getIconUrl;
@@ -29,15 +29,15 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
 });
 
-const CallOperatorBooking = () => {
+const ViewTripDetails = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const tripId = location.state?.tripId;
+
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [pickupLocation, setPickupLocation] = useState(null);
   const [dropoffLocation, setDropoffLocation] = useState(null);
-  const [clickCount, setClickCount] = useState(0);
   const [locationError, setLocationError] = useState(false);
-  const [driverList, setDriverList] = useState([]);
-  const [showDrivers, setShowDrivers] = useState(false);
-  const [selectedDriverId, setSelectedDriverId] = useState(null);
 
   // Passenger
   const [passengerFirstName, setPassengerFirstName] = useState(null);
@@ -73,53 +73,34 @@ const CallOperatorBooking = () => {
     } else {
       setLocationError(true); // Set error if the browser doesn't support Geolocation API
     }
+
+    getTripDetail();
   }, []);
 
-  const selectDriver = (driver) => {
-    setSelectedDriver(driver);
-    setSelectedDriverId(driver.driverId);
-  };
+  const getTripDetail = () => {
+    if (tripId) {
+      const url = `v1/trip/${tripId}`;
+      request(url, Constants.GET)
+        .then((response) => {
+          setPassengerFirstName(response.passenger.firstName);
+          setPassengerLastName(response.passenger.lastName);
+          setPassengerContact(response.passenger.contact);
+          setSelectedDriver(response.driver);
+          setPickupLocation({
+            lng: response.startLocation.coordinates[0],
+            lat: response.startLocation.coordinates[1],
+          });
 
-  const searchDrivers = () => {
-    setShowDrivers(true);
-    const url = `v1/driver/search?longitude=${pickupLocation.lng}&latitude=${pickupLocation.lat}`;
-    request(url, Constants.GET)
-      .then((response) => {
-        const dataList = response.map((driver) => ({
-          driverId: driver.id,
-          driverName: `${driver.firstName} ${driver.lastName}`,
-          vehicleName: driver.vehicle.name,
-          vehicleNumber: driver.vehicle.vehicleNumber,
-          rate: driver.rate,
-        }));
-        setDriverList(dataList);
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
-  };
-
-  // Component for handling clicks on the map
-  const LocationSelector = () => {
-    useMapEvents({
-      click(e) {
-        if (clickCount === 0) {
-          setPickupLocation(e.latlng); // First click for pickup location
-          setClickCount(1);
-        } else if (clickCount === 1) {
-          setDropoffLocation(e.latlng); // Second click for dropoff location
-          setClickCount(0);
-        }
-      },
-    });
-
-    return null;
-  };
-
-  const clearSelection = () => {
-    setClickCount(0);
-    setPickupLocation(null);
-    setDropoffLocation(null);
+          setDropoffLocation({
+            lng: response.endLocation.coordinates[0],
+            lat: response.endLocation.coordinates[1],
+          });
+        })
+        .catch((error) => {
+          toast.error("Trip details not found");
+          navigate("/driver", { replace: true });
+        });
+    }
   };
 
   const placeTrip = () => {
@@ -138,7 +119,6 @@ const CallOperatorBooking = () => {
     const url = "v1/trip/call-operator/booking";
     request(url, Constants.POST, body)
       .then((response) => {
-        clearField();
         toast.success("Trip Saved");
       })
       .catch(() => {
@@ -146,19 +126,11 @@ const CallOperatorBooking = () => {
       });
   };
 
-  const clearField = () => {
-    clearSelection();
-    setPassengerFirstName("");
-    setPassengerLastName("");
-    setPassengerContact("");
-    setSelectedDriver({});
-  };
-
   return (
     <>
       <Container>
         <div className="text-center mt-4">
-          <h1>Operator Trip Booking</h1>
+          <h1>Trip Details</h1>
         </div>
 
         {/* Fallback Message when location services are off */}
@@ -177,6 +149,7 @@ const CallOperatorBooking = () => {
                 type="text"
                 value={passengerFirstName}
                 onChange={handlePassengerFirstNameChange}
+                readOnly
               />
             </Form.Group>
             <Form.Group>
@@ -185,6 +158,7 @@ const CallOperatorBooking = () => {
                 type="text"
                 value={passengerLastName}
                 onChange={handlePassengerLastNameChange}
+                readOnly
               />
             </Form.Group>
             <Form.Group>
@@ -193,6 +167,7 @@ const CallOperatorBooking = () => {
                 type="text"
                 value={passengerContact}
                 onChange={handlePassengerContactChange}
+                readOnly
               />
             </Form.Group>
           </Form>
@@ -200,9 +175,8 @@ const CallOperatorBooking = () => {
 
         {/* Map Section */}
         <div className="mt-5">
-          <h3>Select Pickup & Dropoff Location</h3>
           <MapContainer
-            center={[7.8731, 80.7718]} // Sri Lanka coordinates
+            center={[7.8731, 80.7718]}
             zoom={8}
             style={{ height: "400px", width: "100%" }}
           >
@@ -211,24 +185,15 @@ const CallOperatorBooking = () => {
             {pickupLocation && <Marker position={pickupLocation} />}
             {dropoffLocation && <Marker position={dropoffLocation} />}
 
-            <LocationSelector />
             <RoutingMachine
               pickupLocation={pickupLocation}
               dropoffLocation={dropoffLocation}
             />
           </MapContainer>
-          <Button
-            className="btn-clear"
-            variant="primary"
-            onClick={clearSelection}
-          >
-            Clear Selection
-          </Button>
         </div>
 
         {/* Booking Form Section */}
         <div className="booking-form mt-1">
-          <h2>Book Your Ride</h2>
           <Form>
             <Form.Group>
               <Form.Label>Pickup Location</Form.Label>
@@ -254,69 +219,16 @@ const CallOperatorBooking = () => {
                 readOnly
               />
             </Form.Group>
-            <Button
-              className="btn-search"
-              variant="primary"
-              onClick={searchDrivers}
-            >
-              Search Drivers
-            </Button>
-            {showDrivers && (
-              <Row className="mt-1">
-                <Col md={6}>
-                  <h2>Select a Driver</h2>
-                  <div style={{ maxHeight: "400px", overflowY: "scroll" }}>
-                    {driverList.length === 0 && (
-                      <>
-                        <h3>Drivers not found</h3>
-                      </>
-                    )}
-                    {driverList.length > 0 &&
-                      driverList.map((driver, index) => (
-                        <Card
-                          className="driver-item mb-3"
-                          key={index}
-                          onClick={() => selectDriver(driver)}
-                          style={{
-                            cursor: "pointer",
-                            border:
-                              selectedDriverId === driver.driverId
-                                ? "2px solid blue"
-                                : "none",
-                          }} // Change border color if selected
-                        >
-                          <Card.Body>
-                            <h5 className="card-title">{driver.driverName}</h5>
-                            <p className="card-text">
-                              Vehicle : {driver.vehicleName}
-                            </p>
-                            <span className="text-warning">
-                              {[...Array(5)].map((star, i) => (
-                                <FaStar
-                                  key={i}
-                                  color={
-                                    i < Math.round(driver.rate)
-                                      ? "gold"
-                                      : "lightgray"
-                                  }
-                                />
-                              ))}{" "}
-                              {driver.rate}
-                            </span>
-                          </Card.Body>
-                        </Card>
-                      ))}
-                  </div>
-                </Col>
-              </Row>
-            )}
           </Form>
           <Form>
             <Form.Group>
               <Form.Label>Selected Driver</Form.Label>
               <Form.Control
                 type="text"
-                value={selectedDriver && selectedDriver.driverName}
+                value={
+                  selectedDriver &&
+                  `${selectedDriver.firstName} ${selectedDriver.lastName}`
+                }
                 readOnly
               />
             </Form.Group>
@@ -324,7 +236,7 @@ const CallOperatorBooking = () => {
               <Form.Label>Selected Car</Form.Label>
               <Form.Control
                 type="text"
-                value={selectedDriver && selectedDriver.vehicleName}
+                value={selectedDriver && selectedDriver.vehicle.name}
                 readOnly
               />
             </Form.Group>
@@ -333,7 +245,7 @@ const CallOperatorBooking = () => {
               variant="primary"
               onClick={placeTrip}
             >
-              Start a Ride
+              Accept a Ride
             </Button>
           </Form>
         </div>
@@ -343,4 +255,4 @@ const CallOperatorBooking = () => {
   );
 };
 
-export default CallOperatorBooking;
+export default ViewTripDetails;
