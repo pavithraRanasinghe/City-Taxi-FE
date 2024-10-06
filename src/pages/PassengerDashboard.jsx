@@ -60,16 +60,14 @@ const PassengerDashboard = () => {
   };
 
   const onGoingTripDetails = () => {
-    if (currentUser && currentUser.onTrip) {
-      const url = `v1/trip/passenger?passengerId=${getUser().userId}`;
-      request(url, Constants.GET)
-        .then((response) => {
-          setTrip(response);
-        })
-        .catch((error) => {
-          console.log("ER : ", error);
-        });
-    }
+    const url = `v1/trip/passenger?passengerId=${getUser().userId}`;
+    request(url, Constants.GET)
+      .then((response) => {
+        setTrip(response);
+      })
+      .catch((error) => {
+        console.log("ER : ", error);
+      });
   };
 
   // Dummy data for bookings and upcoming rides
@@ -110,9 +108,12 @@ const PassengerDashboard = () => {
     });
   };
 
+  console.log("TRIP : ", trip);
+  console.log("TRIP : ", currentUser);
+  console.log("USER : ", trip && trip.passenger.id === currentUser.userId);
   return (
     <>
-      {currentUser && currentUser.onTrip && (
+      {trip && trip.passenger.id === currentUser.id && (
         <div className="banner" onClick={confirmPayment}>
           ON A TRIP
         </div>

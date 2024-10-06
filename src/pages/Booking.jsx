@@ -40,16 +40,11 @@ const Booking = () => {
   const [driverList, setDriverList] = useState([]);
   const [showDrivers, setShowDrivers] = useState(false);
   const [selectedDriverId, setSelectedDriverId] = useState(null);
+  const [price, setPrice] = useState(0.0);
 
   const navigate = useNavigate();
   // Geolocation to get user's current location for pickup
   useEffect(() => {
-    const currentUser = getUser();
-
-    if (currentUser.onTrip) {
-      navigate("/passenger", { replace: true });
-    }
-
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -85,6 +80,7 @@ const Booking = () => {
           rate: driver.rate,
         }));
         setDriverList(dataList);
+        calcPrice();
       })
       .catch((error) => {
         toast.error(error.message);
@@ -124,6 +120,7 @@ const Booking = () => {
       endLocationName: "END LOC",
       driverId: selectedDriver.driverId,
       passengerId: getUser().userId,
+      price: price,
     });
     const url = "v1/trip";
     request(url, Constants.POST, body)
@@ -134,6 +131,16 @@ const Booking = () => {
       .catch(() => {
         toast.error("Failed to book a trip");
       });
+  };
+
+  const calcPrice = () => {
+    const startLoc = L.latLng(pickupLocation.lat, pickupLocation.lng);
+    const endLoc = L.latLng(dropoffLocation.lat, dropoffLocation.lng);
+
+    const distance = startLoc.distanceTo(endLoc);
+    const distanceKm = distance / 1000;
+    const price = distanceKm * 96;
+    setPrice(price);
   };
 
   return (
@@ -278,6 +285,15 @@ const Booking = () => {
               <Form.Control
                 type="text"
                 value={selectedDriver && selectedDriver.vehicleName}
+                readOnly
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Price for this Trip</Form.Label>
+              <Form.Control
+                type="text"
+                value={price.toFixed(2)}
+                step="0.01"
                 readOnly
               />
             </Form.Group>

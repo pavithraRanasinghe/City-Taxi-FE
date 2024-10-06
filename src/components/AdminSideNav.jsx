@@ -68,9 +68,7 @@ const AdminSideNav = () => {
                 {getUser().userType === PASSENGER && (
                   <Nav className="justify-content-end flex-grow-1 pe-3">
                     <Nav.Link href="passenger">Home</Nav.Link>
-                    <Nav.Link href="booking" disabled={getUser().onTrip}>
-                      Booking
-                    </Nav.Link>
+                    <Nav.Link href="booking">Booking</Nav.Link>
                     <Nav.Link href="/trips">Trips</Nav.Link>
                   </Nav>
                 )}
