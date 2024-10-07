@@ -22,12 +22,15 @@ import AdminRequireAuth from "./components/AdminRequireAuth";
 import AdminSideNav from "./components/AdminSideNav";
 import CallOperatorBooking from "./pages/CallOperatorBooking";
 import ViewTripDetails from "./pages/ViewTripDetails";
+import DriverProfile from "./pages/ViewProfileDriver";
+import ManageVehicle from "./pages/ManageVehicle";
 
 function App() {
   const location = useLocation();
   return (
     <>
-      {!location.pathname.startsWith("/register") &&
+      {location.pathname !== "/" &&
+        !location.pathname.startsWith("/register") &&
         !location.pathname.startsWith("/login") && <AdminSideNav />}
       <Routes>
         <Route path="/" element={<Home />} />
@@ -39,7 +42,9 @@ function App() {
         <Route path="trips" element={<OngoingTrip />} />
         <Route path="call-operator" element={<CallOperatorBooking />} />
         <Route path="view-trip" element={<ViewTripDetails />} />
+        <Route path="view-driver" element={<DriverProfile />} />
         <Route element={<AdminRequireAuth />}>
+          <Route path="admin/manage-vehicle" element={<ManageVehicle />} />
           <Route path="admin/manage-drivers" element={<ManageDrivers />} />
           <Route path="admin/manage-passenger" element={<ManagePassengers />} />
         </Route>

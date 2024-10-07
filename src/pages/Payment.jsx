@@ -82,12 +82,13 @@ const PaymentView = () => {
                     {tripDetails.endLocationName}
                   </p>
                   <p>
-                    <strong>Trip Distance:</strong> {tripDetails.distance} km
+                    <strong>Trip Distance:</strong>{" "}
+                    {(tripDetails.distance / 1000).toFixed(3)} km
                   </p>
                 </Col>
                 <Col md={6}>
                   <p>
-                    <strong>Trip Fare:</strong> ${tripDetails.price}
+                    <strong>Trip Fare:</strong> LKR.{tripDetails.price}
                   </p>
                   <p>
                     <strong>Status:</strong> {tripDetails.status}

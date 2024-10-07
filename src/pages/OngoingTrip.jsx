@@ -11,15 +11,19 @@ const OngoingTrip = () => {
   const currentUser = getUser();
 
   useEffect(() => {
-    console.log("USE EFFECT");
     loadData("PENDING");
   }, []);
 
   const loadData = (status) => {
     setSelectedStatus(status);
-    const url = `v1/trip/status/${currentUser.userType.toLowerCase()}?status=${status}&id=${
-      currentUser.userId
-    }`;
+    let url;
+    if (currentUser.getUserType === Constants.ADMIN) {
+      url = `v1/trip/status/${currentUser.userType.toLowerCase()}?status=${status}`;
+    } else {
+      url = `v1/trip/status/${currentUser.userType.toLowerCase()}?status=${status}&id=${
+        currentUser.userId
+      }`;
+    }
 
     request(url, Constants.GET).then((response) => {
       setTripList(response);

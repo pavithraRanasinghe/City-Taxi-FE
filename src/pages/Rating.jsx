@@ -86,6 +86,7 @@ const Feedback = () => {
       request(url, Constants.POST, body)
         .then(() => {
           toast.success("Feedback saved");
+          navigate("/passenger", { replace: true });
         })
         .catch(() => {
           toast.error("Feedback not saved");

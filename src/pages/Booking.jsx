@@ -124,11 +124,11 @@ const Booking = () => {
       startLatitude: pickupLocation.lat,
       endLongitude: dropoffLocation.lng,
       endLatitude: dropoffLocation.lat,
-      startLocationName: starLocationName,
-      endLocationName: endLocationName,
+      startLocationName: "starLocationName",
+      endLocationName: "endLocationName",
       driverId: selectedDriver.driverId,
       passengerId: getUser().userId,
-      price: price,
+      price: price.toFixed(2),
       distance: distance,
     });
 

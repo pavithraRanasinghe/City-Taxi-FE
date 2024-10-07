@@ -284,51 +284,6 @@ const VehicleRegister = () => {
             )}
           </FloatingLabel>
 
-          <FloatingLabel
-            controlId="vehicleLicense"
-            label="Upload Vehicle License"
-            className="mb-3 txtInput"
-          >
-            <Form.Control
-              type="file"
-              onChange={handleLicenseChange}
-              accept=".pdf, .jpg, .jpeg"
-            />
-            {fileErrors.licenseError && (
-              <p className="invalidText">{fileErrors.licenseError}</p>
-            )}
-          </FloatingLabel>
-
-          <FloatingLabel
-            controlId="vehicleInsurance"
-            label="Upload Vehicle Insurance"
-            className="mb-3 txtInput"
-          >
-            <Form.Control
-              type="file"
-              onChange={handleInsuranceChange}
-              accept=".pdf, .jpg, .jpeg"
-            />
-            {fileErrors.insuranceError && (
-              <p className="invalidText">{fileErrors.insuranceError}</p>
-            )}
-          </FloatingLabel>
-
-          <FloatingLabel
-            controlId="vehiclePhotos"
-            label="Upload Vehicle Photos"
-            className="mb-3 txtInput"
-          >
-            <Form.Control
-              type="file"
-              multiple
-              onChange={handlePhotosChange}
-              accept=".jpg, .jpeg"
-            />
-            {fileErrors.photosError && (
-              <p className="invalidText">{fileErrors.photosError}</p>
-            )}
-          </FloatingLabel>
 
           <div className="wrapper">
             <Button className="register-button" onClick={handleRegister}>

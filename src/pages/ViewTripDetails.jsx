@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  Form,
-  Button,
-  Container,
-  Row,
-  Col,
-  Alert,
-} from "react-bootstrap";
+import { Form, Button, Container, Alert } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./css/Booking.css";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { request } from "../common/APIManager";
@@ -43,6 +35,7 @@ const ViewTripDetails = () => {
   const [passengerFirstName, setPassengerFirstName] = useState(null);
   const [passengerLastName, setPassengerLastName] = useState(null);
   const [passengerContact, setPassengerContact] = useState(null);
+  const [price, setPrice] = useState(null);
 
   const handlePassengerFirstNameChange = (event) => {
     setPassengerFirstName(event.target.value);
@@ -95,6 +88,7 @@ const ViewTripDetails = () => {
             lng: response.endLocation.coordinates[0],
             lat: response.endLocation.coordinates[1],
           });
+          setPrice(response.price);
         })
         .catch((error) => {
           toast.error("Trip details not found");
@@ -227,6 +221,15 @@ const ViewTripDetails = () => {
               <Form.Control
                 type="text"
                 value={selectedDriver && selectedDriver.vehicle.name}
+                readOnly
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Price for this Trip</Form.Label>
+              <Form.Control
+                type="text"
+                value={price && price.toFixed(2)}
+                step="0.01"
                 readOnly
               />
             </Form.Group>

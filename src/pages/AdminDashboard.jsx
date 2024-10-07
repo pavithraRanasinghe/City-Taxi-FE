@@ -105,7 +105,7 @@ const AdminDashboard = () => {
               <Card.Body>
                 <FaMoneyBillWave size={40} style={{ color: "#f1c40f" }} />{" "}
                 {/* Yellow icon for earnings */}
-                <h3>${data.totalEarnings}</h3>
+                <h3>LKR.{data.totalEarnings}</h3>
                 <p>Total Earnings</p>
                 <Link to="/admin/reports">View Financial Reports</Link>
               </Card.Body>

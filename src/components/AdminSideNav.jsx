@@ -48,8 +48,11 @@ const AdminSideNav = () => {
                 {getUser().userType === ADMIN && (
                   <Nav className="justify-content-end flex-grow-1 pe-3">
                     <Nav.Link href="/admin">Home</Nav.Link>
-                    <Nav.Link href="manage-driver">Drivers</Nav.Link>
-                    <Nav.Link href="manage-passenger">Passengers</Nav.Link>
+                    <Nav.Link href="/admin/manage-drivers">Drivers</Nav.Link>
+                    <Nav.Link href="/admin/manage-passenger">
+                      Passengers
+                    </Nav.Link>
+                    <Nav.Link href="/admin/manage-vehicle">Vehicle</Nav.Link>
                     <Nav.Link href="/trips">Trips</Nav.Link>
                   </Nav>
                 )}
@@ -57,6 +60,7 @@ const AdminSideNav = () => {
                   <Nav className="justify-content-end flex-grow-1 pe-3">
                     <Nav.Link href="driver">Home</Nav.Link>
                     <Nav.Link href="/trips">Trips</Nav.Link>
+                    <Nav.Link href="/vehicle">Vehicle</Nav.Link>
                   </Nav>
                 )}
                 {getUser().userType === OPERATOR && (

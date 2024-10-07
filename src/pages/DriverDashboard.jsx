@@ -27,7 +27,6 @@ const DriverDashboard = () => {
     getCurrentLocation();
     loadDashboardData();
     loadTripsByStatus("PENDING");
-    updateCurrentLocation();
     findDriver();
   }, []);
 
@@ -37,6 +36,13 @@ const DriverDashboard = () => {
         (position) => {
           const { latitude, longitude } = position.coords;
           setCurrentLocation({ lat: latitude, lng: longitude });
+          const url = `v1/driver/update-location/${
+            getUser().userId
+          }?longitude=${longitude}&latitude=${latitude}`;
+
+          request(url, Constants.PUT).catch((error) => {
+            if (error !== 200) toast.error("Location not updated");
+          });
           setLocationError(false); // Reset error if location is successfully retrieved
         },
         (error) => {
@@ -46,18 +52,6 @@ const DriverDashboard = () => {
       );
     } else {
       setLocationError(true); // Set error if the browser doesn't support Geolocation API
-    }
-  };
-
-  const updateCurrentLocation = () => {
-    if (currentLocation !== null) {
-      const url = `v1/driver/update-location/${getUser().userId}?longitude=${
-        currentLocation.lng
-      }&latitude=${currentLocation.lat}`;
-
-      request(url, Constants.PUT).catch((error) => {
-        if (error !== 200) toast.error("Location not updated");
-      });
     }
   };
 
