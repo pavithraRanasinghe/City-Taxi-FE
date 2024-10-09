@@ -1,0 +1,25 @@
+.driver-status{
+     width: 100%;
+  background-color: green; /* Fallback color */
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-weight: bolder;
+  color: white;
+}
+
+.banner {
+  width: 100%;
+  background-color: green; /* Fallback color */
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-weight: bolder;
+  color: white;
+}

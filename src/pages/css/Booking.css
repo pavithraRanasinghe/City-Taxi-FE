@@ -1,0 +1,15 @@
+.btn-search{
+    margin: 12px 0 12px 0;
+    width: 100%;
+}
+.btn-clear{
+    margin: 12px 0 12px 0;
+    color: white;
+    background-color: red;
+}
+
+.btn-card {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
