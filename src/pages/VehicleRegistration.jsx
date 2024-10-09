@@ -103,7 +103,12 @@ const VehicleRegister = () => {
       setIsModelValid(false);
       return;
     }
-    if (manufacturedYear.trim() === "" || isNaN(manufacturedYear)) {
+    const currentYear = new Date().getFullYear();
+    if (
+      manufacturedYear.trim() === "" ||
+      isNaN(manufacturedYear) ||
+      manufacturedYear >= currentYear
+    ) {
       setIsManufacturedYearValid(false);
       return;
     }
@@ -142,7 +147,7 @@ const VehicleRegister = () => {
       .then((response) => {
         toast.success("Vehicle Registered Successfully");
         clearField();
-        navigate("/driver");
+        navigate("/driver", { replace: true });
       })
       .catch((error) => {
         toast.error("Vehicle Registration Failed");
@@ -165,27 +170,29 @@ const VehicleRegister = () => {
     setVehiclePhotos(null);
   };
 
+  const handleChange = (e) => {
+    setVehicleType(e.target.value);
+  };
+
   return (
     <div>
       <div className="register-container">
-
         <h2 className="welcome">Vehicle Registration</h2>
 
         <Form className="m-3">
-          <FloatingLabel
-            controlId="vehicleType"
-            label="Vehicle Type"
-            className="mb-3 txtInput"
-          >
+          <FloatingLabel controlId="type" label="Select Vehicle Type">
             <Form.Control
-              type="text"
-              placeholder="Vehicle Type"
+              className="mb-3"
+              style={{ width: "75vw", margin: "auto" }}
+              as="select"
               value={type}
-              onChange={(e) => setVehicleType(e.target.value)}
-            />
-            {!isVehicleTypeValid && (
-              <p className="invalidText">Vehicle type cannot be empty</p>
-            )}
+              onChange={handleChange}
+              aria-label="Select Vehicle Type"
+            >
+              <option value="Car">Car</option>
+              <option value="Bike">Bike</option>
+              <option value="Wheel">Three Wheeler</option>
+            </Form.Control>
           </FloatingLabel>
 
           <FloatingLabel
@@ -252,20 +259,22 @@ const VehicleRegister = () => {
             )}
           </FloatingLabel>
 
-          <FloatingLabel
-            controlId="color"
-            label="Color"
-            className="mb-3 txtInput"
-          >
+          <FloatingLabel controlId="floatingSelect" label="Select Color">
             <Form.Control
-              type="text"
-              placeholder="Color"
+              as="select"
+              style={{ width: "75vw", margin: "auto" }}
+              className="mb-3"
               value={color}
               onChange={(e) => setColor(e.target.value)}
-            />
-            {!isColorValid && (
-              <p className="invalidText">Color cannot be empty</p>
-            )}
+              aria-label="Select Color"
+            >
+              <option value="white">White</option>
+              <option value="black">Black</option>
+              <option value="red">Red</option>
+              <option value="blue">Blue</option>
+              <option value="green">Green</option>
+              <option value="yellow">Yellow</option>
+            </Form.Control>
           </FloatingLabel>
 
           <FloatingLabel
@@ -283,7 +292,6 @@ const VehicleRegister = () => {
               <p className="invalidText">Registration number cannot be empty</p>
             )}
           </FloatingLabel>
-
 
           <div className="wrapper">
             <Button className="register-button" onClick={handleRegister}>
