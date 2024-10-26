@@ -9,7 +9,7 @@ import * as Constants from "../common/Constants";
 import "./css/Login.css";
 import { setUser } from "../common/PersistanceManager";
 import Loader from "../components/Loader";
-import logoName from "../assets/logo.png";
+import logoName from "../assets/Taxi.png";
 
 const LogIn = () => {
   const navigate = useNavigate();
@@ -102,16 +102,23 @@ const LogIn = () => {
             token: response.token,
             userType: response.userType,
             userId: userId,
+            onTrip: response.onTrip,
           };
           setUser(user);
           clearField();
           const type = response.userType;
           switch (type) {
             case Constants.DRIVER:
-              navigate("/driver", { replace: true });
+              navigate("/vehicle", { replace: true });
               break;
             case Constants.PASSENGER:
               navigate("/booking", { replace: true });
+              break;
+            case Constants.ADMIN:
+              navigate("/admin", { replace: true });
+              break;
+            case Constants.OPERATOR:
+              navigate("/call-operator", { replace: true });
               break;
             default:
               navigate("/login", { replace: true });

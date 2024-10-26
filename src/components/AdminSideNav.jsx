@@ -2,14 +2,13 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Offcanvas from "react-bootstrap/Offcanvas";
+import { getUser } from "../common/PersistanceManager";
 import { useLocation } from "react-router-dom";
+import { ADMIN, DRIVER, OPERATOR, PASSENGER } from "../common/Constants";
+import { LogOut } from "../common/UserManager";
 
 const AdminSideNav = () => {
-  // Static user information
-  const user = {
-    name: "Janitha", // Static username
-  };
-
+  const user = getUser();
   const location = useLocation();
   const currentPath = location.pathname;
   const header = currentPath.startsWith("/")
@@ -24,7 +23,7 @@ const AdminSideNav = () => {
             aria-controls={`offcanvasNavbar-expand-${false}`}
             style={{ marginLeft: 0 }}
           />
-          
+          <Navbar.Brand href="#">{header.toUpperCase()}</Navbar.Brand>
           <Navbar.Text className="justify-content-end">
             Signed in as: {user.name}
           </Navbar.Text>
@@ -38,14 +37,49 @@ const AdminSideNav = () => {
                 Menu
               </Offcanvas.Title>
             </Offcanvas.Header>
-            <Offcanvas.Body>
-              {/* Static Navigation Links */}
-              <Nav className="justify-content-end flex-grow-1 pe-3">
-                <Nav.Link href="/home">Home</Nav.Link>
-                <Nav.Link href="/driver">Driver</Nav.Link>
-                <Nav.Link href="/vehicle">Vehicle</Nav.Link>
-                <Nav.Link href="/customer">Customer</Nav.Link>
-                <Nav.Link href="/trip">Trip</Nav.Link>
+            <Offcanvas.Body
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+              }}
+            >
+              <div style={{ flex: 1 }}>
+                {getUser().userType === ADMIN && (
+                  <Nav className="justify-content-end flex-grow-1 pe-3">
+                    <Nav.Link href="/admin">Home</Nav.Link>
+                    <Nav.Link href="/admin/manage-drivers">Drivers</Nav.Link>
+                    <Nav.Link href="/admin/manage-passenger">
+                      Passengers
+                    </Nav.Link>
+                    <Nav.Link href="/admin/manage-vehicle">Vehicle</Nav.Link>
+                    <Nav.Link href="/trips">Trips</Nav.Link>
+                  </Nav>
+                )}
+                {getUser().userType === DRIVER && (
+                  <Nav className="justify-content-end flex-grow-1 pe-3">
+                    <Nav.Link href="driver">Home</Nav.Link>
+                    <Nav.Link href="/trips">Trips</Nav.Link>
+                    <Nav.Link href="/vehicle">Vehicle</Nav.Link>
+                  </Nav>
+                )}
+                {getUser().userType === OPERATOR && (
+                  <Nav className="justify-content-end flex-grow-1 pe-3">
+                    <Nav.Link href="/all-operator">Home</Nav.Link>
+                    <Nav.Link href="/trips">Trips</Nav.Link>
+                  </Nav>
+                )}
+                {getUser().userType === PASSENGER && (
+                  <Nav className="justify-content-end flex-grow-1 pe-3">
+                    <Nav.Link href="passenger">Home</Nav.Link>
+                    <Nav.Link href="booking">Booking</Nav.Link>
+                    <Nav.Link href="/trips">Trips</Nav.Link>
+                  </Nav>
+                )}
+              </div>
+              {/* Add Logout Link at the bottom */}
+              <Nav className="justify-content-end pe-3">
+                <Nav.Link onClick={() => LogOut()}>Logout</Nav.Link>
               </Nav>
             </Offcanvas.Body>
           </Navbar.Offcanvas>

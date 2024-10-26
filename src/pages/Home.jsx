@@ -1,5 +1,5 @@
 import "./css/Home.css";
-import logoName from "../assets/logo.png";
+import logoName from "../assets/Taxi.png";
 import { useNavigate } from "react-router-dom";
 import { DRIVER, PASSENGER } from "../common/Constants";
 import { Button } from "react-bootstrap";

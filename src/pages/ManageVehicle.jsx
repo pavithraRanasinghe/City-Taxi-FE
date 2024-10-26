@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Container, Row, Col, Form, InputGroup } from "react-bootstrap";
+import {
+  Card,
+  Button,
+  Container,
+  Row,
+  Col,
+  Form,
+  InputGroup,
+} from "react-bootstrap";
 import { FaSearch, FaCar, FaStar, FaFilePdf } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -9,10 +17,10 @@ import { request } from "../common/APIManager";
 import * as Constants from "../common/Constants";
 import generateExcelFile from "../util/fileUtil";
 
-const ManageDrivers = () => {
-  const [drivers, setDrivers] = useState([]);
+const ManageVehicle = () => {
+  const [vehicle, setVehicle] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredDrivers, setFilteredDrivers] = useState([]);
+  const [filteredVehicle, setFilteredVehicle] = useState([]);
   const navigate = useNavigate(); // Use navigate for page navigation
 
   useEffect(() => {
@@ -20,14 +28,14 @@ const ManageDrivers = () => {
   }, []);
 
   const loadDrivers = () => {
-    const url = "v1/driver";
+    const url = "v1/vehicle";
     request(url, Constants.GET)
       .then((response) => {
-        setDrivers(response);
-        setFilteredDrivers(response);
+        setVehicle(response);
+        setFilteredVehicle(response);
       })
       .catch((error) => {
-        console.log("Divers not loaded ", error);
+        console.log("Vehicle not loaded ", error);
       });
   };
   // Handle search input
@@ -37,38 +45,44 @@ const ManageDrivers = () => {
       setSearchQuery(query);
 
       // Filter drivers based on search query
-      const filtered = drivers.filter(
+      const filtered = vehicle.filter(
         (driver) =>
           driver.name.toLowerCase().includes(query) ||
           driver.email.toLowerCase().includes(query) ||
           driver.phone.includes(query)
       );
-      setFilteredDrivers(filtered);
+      setFilteredVehicle(filtered);
     }
   };
 
   // Function to generate PDF report
   const exportReport = async () => {
     try {
-      const jsonData = filteredDrivers.map((driver) => [
-        driver.id,
-        driver.firstName,
-        driver.lastName,
-        driver.contact,
-        driver.status,
-        driver.rate,
-      ]);
-
+      const jsonData = filteredVehicle.map((vehicle) => {
+        const driver = vehicle.driver
+          ? vehicle.driver.firstName + " " + vehicle.driver.lastName
+          : "";
+        return [
+          vehicle.id,
+          vehicle.name,
+          vehicle.type,
+          vehicle.color,
+          driver,
+          vehicle.vehicleNumber,
+          vehicle.registrationNumber,
+        ];
+      });
       // Define headers as an array of objects
       const headers = [
         { header: "ID", key: "id", width: 10 },
-        { header: "First Name", key: "firstName", width: 20 },
-        { header: "Last Name", key: "lastName", width: 20 },
-        { header: "Contact", key: "contact", width: 15 },
-        { header: "Status", key: "status", width: 15 },
-        { header: "Rate", key: "rate", width: 10 },
+        { header: "Name", key: "name", width: 20 },
+        { header: "Type", key: "type", width: 15 },
+        { header: "Color", key: "color", width: 15 },
+        { header: "Driver", key: "driver", width: 15 },
+        { header: "Vehicle Number", key: "vehicleNumber", width: 20 },
+        { header: "Reg Number", key: "registrationNumber", width: 10 },
       ];
-      await generateExcelFile(headers, jsonData, "Drivers");
+      await generateExcelFile(headers, jsonData, "Vehicle");
       toast.success("Report generated successful");
     } catch (error) {
       console.log("ER : ", error);
@@ -83,26 +97,12 @@ const ManageDrivers = () => {
     });
   };
 
-  const onActivate = (driverId, toActive) => {
-    const url = `v1/driver/${driverId}/update-status?status=${
-      toActive ? "AVAILABLE" : "BLOCKED"
-    }`;
-    request(url, Constants.PUT)
-      .then(() => {
-        toast.success("Driver update success");
-        loadDrivers();
-      })
-      .catch(() => {
-        toast.error("Driver update failed");
-      });
-  };
-
   return (
     <>
       <Container className="mt-5">
         <Row className="mb-4">
           <Col md={9}>
-            <h1>Manage Drivers</h1>
+            <h1>Manage Vehicle</h1>
           </Col>
           <Col md={3}>
             {/* Search Bar */}
@@ -131,8 +131,8 @@ const ManageDrivers = () => {
 
         {/* Drivers Cards */}
         <Row>
-          {filteredDrivers.map((driver) => (
-            <Col md={4} key={driver.id} className="mb-4">
+          {filteredVehicle.map((vehicle) => (
+            <Col md={4} key={vehicle.id} className="mb-4">
               <Card className="h-100 shadow-sm">
                 <Card.Body>
                   <div className="d-flex align-items-center mb-3">
@@ -140,38 +140,28 @@ const ManageDrivers = () => {
                     <FaCar size={40} style={{ marginRight: "1rem" }} />
                     <div>
                       <h5 className="mb-1">
-                        {driver.firstName} {driver.lastName}
+                        {vehicle.name} {vehicle.model}
                       </h5>
-                      <p className="mb-0 text-muted">{driver.email}</p>
+                      <p className="mb-0 text-muted">{vehicle.email}</p>
                     </div>
                   </div>
 
                   <Card.Text>
-                    <strong>Phone:</strong> {driver.contact}
+                    <strong>Color:</strong> {vehicle.color}
                     <br />
-                    <strong>Status:</strong>{" "}
-                    <span
-                      className={
-                        driver.status === "AVAILABLE"
-                          ? "text-success"
-                          : "text-danger"
-                      }
-                    >
-                      {driver.status}
-                    </span>
+                    <strong>Vehicle Number:</strong> {vehicle.vehicleNumber}
                     <br />
-                    <strong>Rating:</strong>{" "}
-                    <span className="text-warning">
-                      {[...Array(5)].map((star, i) => (
-                        <FaStar
-                          key={i}
-                          color={
-                            i < Math.round(driver.rate) ? "gold" : "lightgray"
-                          }
-                        />
-                      ))}{" "}
-                      {driver.rate}
-                    </span>
+                    <strong>Type:</strong> {vehicle.type}
+                    <br />
+                    {vehicle.driver && (
+                      <>
+                        <strong>Driver:</strong> {vehicle.driver.firstName}{" "}
+                        {vehicle.driver.lastName}
+                        <br />
+                      </>
+                    )}
+                    <strong>Reg Number:</strong> {vehicle.registrationNumber}
+                    <br />
                   </Card.Text>
                 </Card.Body>
 
@@ -180,26 +170,9 @@ const ManageDrivers = () => {
                   <Button
                     variant="outline-primary"
                     style={{ marginRight: "1rem" }}
-                    onClick={() => viewProfileDriver(driver.id)} // Navigate to the profile page
+                    onClick={() => viewProfileDriver(vehicle.id)} // Navigate to the profile page
                   >
                     View Profile
-                  </Button>
-                  <Button
-                    variant={
-                      ["AVAILABLE", "BUSY"].includes(driver.status)
-                        ? "danger"
-                        : "success"
-                    }
-                    onClick={() => {
-                      onActivate(
-                        driver.id,
-                        !["AVAILABLE", "BUSY"].includes(driver.status)
-                      );
-                    }}
-                  >
-                    {["AVAILABLE", "BUSY"].includes(driver.status)
-                      ? "Deactivate"
-                      : "Activate"}
                   </Button>
                 </Card.Footer>
               </Card>
@@ -212,4 +185,4 @@ const ManageDrivers = () => {
   );
 };
 
-export default ManageDrivers;
+export default ManageVehicle;

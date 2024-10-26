@@ -1,29 +1,87 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Button, Table, Container, Row, Col } from "react-bootstrap";
 import { FaUser, FaHistory, FaClock } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
-import PassengerSideNav from "../components/PassengerSideNav";
+import { getUser } from "../common/PersistanceManager";
+import { request } from "../common/APIManager";
+import * as Constants from "../common/Constants";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const PassengerDashboard = () => {
-  // Dummy data for bookings and upcoming rides
-  const bookingHistory = [
-    {
-      id: 1,
-      date: "2023-09-21",
-      driver: "John Doe",
-      car: "Toyota Prius",
-      price: "$25",
-      status: "Completed",
-    },
-    {
-      id: 2,
-      date: "2023-09-15",
-      driver: "Jane Smith",
-      car: "Honda Civic",
-      price: "$30",
-      status: "Completed",
-    },
-  ];
+  const [currentUser, setCurrentUser] = useState();
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [trip, setTrip] = useState(null);
+  const [tripList, setTripList] = useState([]);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    currentPassenger();
+    getCurrentLocation();
+    updateCurrentLocation();
+    onGoingTripDetails();
+    loadAllPassengerTrips();
+  }, []);
+
+  const currentPassenger = async () => {
+    const url = `v1/passenger/${getUser().userId}`;
+    await request(url, Constants.GET)
+      .then((response) => {
+        setCurrentUser(response);
+      })
+      .catch((error) => {
+        console.log("ER : ", error);
+      });
+  };
+
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setCurrentLocation({ lat: latitude, lng: longitude });
+        },
+        (error) => {
+          console.error("Error retrieving location:", error);
+        }
+      );
+    } else {
+      console.error("Location service not ready");
+    }
+  };
+  const updateCurrentLocation = async () => {
+    if (currentLocation !== null) {
+      const url = `v1/passenger/update-location/${getUser().userId}?longitude=${
+        currentLocation.lng
+      }&latitude=${currentLocation.lat}`;
+
+      await request(url, Constants.PUT);
+    }
+  };
+
+  const loadAllPassengerTrips = () => {
+    const url = `v1/trip/passenger/${getUser().userId}`;
+    request(url, Constants.GET)
+      .then((response) => {
+        setTripList(response);
+      })
+      .catch((error) => {
+        console.log("ER : ", error);
+      });
+  };
+
+  const onGoingTripDetails = () => {
+    const url = `v1/trip/confirmed-trip?passengerId=${getUser().userId}`;
+    request(url, Constants.GET)
+      .then((response) => {
+        setTrip(response);
+      })
+      .catch((error) => {
+        console.log("ER : ", error);
+      });
+  };
 
   const upcomingRides = [
     {
@@ -37,10 +95,18 @@ const PassengerDashboard = () => {
     },
   ];
 
+  const confirmPayment = () => {
+    navigate("/payment", {
+      state: { tripId: trip.id },
+    });
+  };
   return (
     <>
-      <PassengerSideNav />
-
+      {trip && trip.passenger.id === currentUser.id && (
+        <div className="banner" onClick={confirmPayment}>
+          ON A TRIP
+        </div>
+      )}
       <Container className="mt-5">
         <Row>
           {/* Profile Card */}
@@ -50,9 +116,9 @@ const PassengerDashboard = () => {
                 <FaUser size={60} className="mb-3" />
                 <Card.Title>Passenger Profile</Card.Title>
                 <Card.Text>
-                  Name: John Doe <br />
-                  Email: johndoe@example.com <br />
-                  Phone: +1 123-456-7890
+                  Name: {getUser().name}
+                  <br />
+                  Email: {getUser().email} <br />
                 </Card.Text>
                 <Button variant="primary">Edit Profile</Button>
               </Card.Body>
@@ -76,11 +142,11 @@ const PassengerDashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {bookingHistory.map((booking) => (
+                    {tripList.map((booking) => (
                       <tr key={booking.id}>
                         <td>{booking.date}</td>
-                        <td>{booking.driver}</td>
-                        <td>{booking.car}</td>
+                        <td>{booking.driver.firstName}</td>
+                        <td>{booking.driver.vehicle.name}</td>
                         <td>{booking.price}</td>
                         <td>{booking.status}</td>
                       </tr>
@@ -128,6 +194,7 @@ const PassengerDashboard = () => {
           </Col>
         </Row>
       </Container>
+      <ToastContainer />
     </>
   );
 };

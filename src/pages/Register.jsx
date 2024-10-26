@@ -9,7 +9,7 @@ import { request } from "../common/APIManager";
 import * as Constants from "../common/Constants";
 import "./css/Register.css";
 import Loader from "../components/Loader";
-import logoName from "../assets/logo.png";
+import logoName from "../assets/Taxi.png";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -33,6 +33,7 @@ const Register = () => {
   const [isPasswordLengthValid, setIsPassworLengthValid] = useState(true);
   const [isRePasswordValid, setIsRePassworValid] = useState(true);
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const contactRegex = /^(?:0|94)(7[0-9]{8}|1[1-9][0-9]{7}|[2-9][0-9]{8})$/;
 
   const handleFirstNameChange = (event) => {
     setFirstName(event.target.value);
@@ -45,13 +46,28 @@ const Register = () => {
 
   const handleLastNameChange = (event) => {
     setLastName(event.target.value);
+    if (lastName.length < 1) {
+      setIsLastNameValid(false);
+    } else {
+      setIsLastNameValid(true);
+    }
   };
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
+    if (lastName.length < 1) {
+      setIsEmailValid(false);
+    } else {
+      setIsEmailValid(true);
+    }
   };
   const handleContactChange = (event) => {
     setContact(event.target.value);
+    if (!contactRegex.test(event.target.value)) {
+      setIsContactValid(false);
+    } else {
+      setIsContactValid(true);
+    }
   };
 
   const handlePasswordChange = (event) => {
@@ -81,7 +97,7 @@ const Register = () => {
     } else {
       setIsLastNameValid(true);
     }
-    if (contact.trim() === "") {
+    if (contact.trim() === "" || !contactRegex.test(contact)) {
       setIsContactValid(false);
       return;
     } else {
@@ -150,7 +166,12 @@ const Register = () => {
   return (
     <div>
       <div className="register-container">
-        <img src={logoName} alt="Profile" className="logo_name" style={{ width: '350px', height: 'auto' }} />
+        <img
+          src={logoName}
+          alt="Profile"
+          className="logo_name"
+          style={{ width: "350px", height: "auto" }}
+        />
 
         <h2 className="welcome">Register as a {userType}</h2>
 
@@ -197,7 +218,7 @@ const Register = () => {
               onChange={handleContactChange}
             />
             {!isContactValid && (
-              <p className="invalidText">Phone Number cann't be empty</p>
+              <p className="invalidText">Please enter valid phone number</p>
             )}
           </FloatingLabel>
           <FloatingLabel
